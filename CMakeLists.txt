@@ -1,12 +1,21 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.2)
+
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
-
-find_package (Boost REQUIRED COMPONENTS  filesystem  
-program_options)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 
 project (bayan VERSION ${PROJECT_VESRION})
+
+find_package(Threads REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system date_time)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    link_directories(${Boost_LIBRARY_DIRS})
+endif()
+
 find_package(GTest)
 configure_file(version.h.in version.h)
 
@@ -16,7 +25,6 @@ add_executable (
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
-target_link_libraries (bayan Boost::boost Boost::program_options Boost::filesystem)  
 
 target_include_directories(
     bayan PRIVATE 
@@ -36,7 +44,6 @@ target_include_directories(
     bayan_gtest PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/test
 )
-
 
 target_include_directories(
     bayan_gtest PRIVATE

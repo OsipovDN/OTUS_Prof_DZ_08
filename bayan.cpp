@@ -1,11 +1,11 @@
 ﻿#include "bayan.h"
 #include <iostream>
-#include "boost/asio"
+#include <boost/asio.hpp>
 
-using namespace std;
 
-int main()
+
+int main(int, char*)
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+
+    return 0;
 }
