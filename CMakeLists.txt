@@ -5,9 +5,6 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 find_package (Boost REQUIRED COMPONENTS  filesystem  
 program_options)
-find_package_handle_standard_args(Boost DEFAULT_MSG
-     ${Boost_INCLUDE_DIRS}
-    )
 
 project (bayan VERSION ${PROJECT_VESRION})
 find_package(GTest)
