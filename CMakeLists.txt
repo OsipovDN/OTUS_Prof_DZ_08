@@ -3,9 +3,8 @@
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-find_package (Boost COMPONENTS  filesystem  
-program_options REQUIRED) 
-include_directories(${Boost_INCLUDE_DIR} )
+find_package (Boost REQUIRED COMPONENTS  filesystem  
+program_options)
 
 project (bayan VERSION ${PROJECT_VESRION})
 find_package(GTest)
