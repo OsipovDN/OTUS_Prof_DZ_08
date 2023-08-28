@@ -10,7 +10,7 @@ set(Boost_USE_MULTITHREADED ON)
 project (bayan VERSION ${PROJECT_VESRION})
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system date_time)
+find_package(Boost REQUIRED COMPONENTS system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
