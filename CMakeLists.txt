@@ -3,7 +3,7 @@
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-find_package( boost COMPONENTS asio REQUIRED )
+find_package(Boost COMPONENTS asio REQUIRED )
 include_directories(${Boost_INCLUDE_DIR} )
 
 project (bayan VERSION ${PROJECT_VESRION})
