@@ -3,7 +3,8 @@
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-find_package(Boost COMPONENTS asio REQUIRED )
+find_package (Boost COMPONENTS  filesystem  
+program_options REQUIRED) 
 include_directories(${Boost_INCLUDE_DIR} )
 
 project (bayan VERSION ${PROJECT_VESRION})
@@ -16,7 +17,7 @@ add_executable (
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
-target_link_libraries (bayan LINK_PUBLIC ${Boost_LIBRARIES} )
+target_link_libraries (bayan Boost::boost Boost::program_options Boost::filesystem)  
 
 target_include_directories(
     bayan PRIVATE 
