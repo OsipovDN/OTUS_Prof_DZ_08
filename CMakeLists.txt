@@ -4,6 +4,7 @@
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
+
 project (bayan VERSION ${PROJECT_VESRION})
 
 set (CMAKE_CXX_STANDARD 17) 
@@ -11,11 +12,19 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(GTest)
 configure_file(version.h.in version.h)
 
+find_package (Boost REQUIRED COMPONENTS  filesystem  
+program_options)
+
 add_executable (
     bayan
     bayan.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
+
+if(Boost_FOUND)
+  target_include_directories(bayan PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries (bayan ${Boost_LIBRARIES})
+endif()
 
 target_include_directories(
     bayan PRIVATE 
@@ -46,13 +55,7 @@ target_link_libraries(
     ${GTEST_BOTH_LIBRARIES}
 )
 
-find_package (Boost COMPONENTS  filesystem 
-program_options REQUIRED)
 
-if (Boost_FOUND)
-    include_directories (SYSTEM ${Boost_INCLUDE_DIR})    
-    target_link_libraries (bayan ${Boost_LIBRARIES}) 
-endif ()
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
