@@ -13,7 +13,7 @@ find_package(GTest)
 configure_file(version.h.in version.h)
 
 find_package (Boost REQUIRED COMPONENTS  
-program_options system)
+program_options filesystem system)
 
 add_executable (
     bayan
