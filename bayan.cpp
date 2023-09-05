@@ -22,9 +22,7 @@ int main(int argc, char* argv[])
 		("Min_file_size,s", po::value<long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
 		("file_mask,m", po::value<std::string>()->default_value(".*.")->notifier(reg), "File mask")
 		("Block_size,S", po::value<int>()->default_value(5), "The size of the block used to read files")
-		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32")
-		;
-
+		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32");
 
 	po::variables_map vm;
 	po::store(parse_command_line(argc, argv, desc), vm);
