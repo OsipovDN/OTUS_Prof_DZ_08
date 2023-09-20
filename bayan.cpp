@@ -1,5 +1,6 @@
 ﻿#include "bayan.h"
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
 #include <boost/regex.hpp>
 #include <iostream>
@@ -16,8 +17,8 @@ int main(int argc, char* argv[])
 	po::options_description desc("Options");
 	desc.add_options()
 		("help,h", "produce help")
-		("include,i", po::value<std::vector<std::string>>()->multitoken(), "Include directories for scanning")
-		("exclude,e", po::value<std::vector<std::string>>()->multitoken(), "Exclude directories from scanning")
+		("include,i", po::value<std::vector<bf::path>>()->multitoken(), "Include directories for scanning")
+		("exclude,e", po::value<std::vector<bf::path>>()->multitoken(), "Exclude directories from scanning")
 		("level,l", po::value<int>()->default_value(5), "One for all directories, 0 - only the specified directory without nested")
 		("Min_file_size,s", po::value<long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
 		("file_mask,m", po::value<std::string>()->default_value(".*."), "File mask")
@@ -32,10 +33,14 @@ int main(int argc, char* argv[])
 		std::cout << desc << '\n';
 	if (vm.count("include")) {
 		std::cout << "include dir: " << std::endl;
-		for (auto it : vm["include"].as<std::vector<std::string>>()) {
-			std::cout << it << std::endl;
+		for (auto it : vm["include"].as<std::vector<bf::path>>()) {
+			bf::directory_iterator dir_it_start{ it };
+			bf::directory_iterator dir_it_end;
+			for (; dir_it_start != dir_it_end; dir_it_start++) {
+				std::cout << *dir_it_start << std::endl;
+			}
+			}
 		}
-	}
 	if (vm.count("exclude")) {
 		std::cout << "exclude dir: " << std::endl;
 		for (auto it : vm["exclude"].as<std::vector<std::string>>()) {
