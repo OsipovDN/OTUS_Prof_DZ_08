@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 	if (vm.count("include")) {
 		std::cout << "include dir: " << std::endl;
 		for (auto it : vm["include"].as<std::vector<bf::path>>()) {
-			bf::directory_iterator dir_it_start{ it };
-			bf::directory_iterator dir_it_end;
+			bf::recursive_directory_iterator dir_it_start{ it.string() };
+			bf::recursive_directory_iterator dir_it_end;
 			for (; dir_it_start != dir_it_end; dir_it_start++) {
-				std::cout << *dir_it_start << std::endl;
+				std::cout << *dir_it_start<< std::endl;
 			}
 		}
 	}
