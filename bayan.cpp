@@ -1,4 +1,4 @@
-﻿#include "bayan.h"
+﻿#include "FileParser.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
@@ -13,7 +13,13 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-	boost::regex reg;
+	std::vector<bf::path> incl;
+	std::vector<bf::path> excl;
+	int lvl;
+	long long size;
+	std::string mask;
+
+
 	po::options_description desc("Options");
 	desc.add_options()
 		("help,h", "produce help")
@@ -31,25 +37,35 @@ int main(int argc, char* argv[])
 
 	if (vm.count("help"))
 		std::cout << desc << '\n';
+
 	if (vm.count("include")) {
 		std::cout << "include dir: " << std::endl;
 		for (auto it : vm["include"].as<std::vector<bf::path>>()) {
-			bf::recursive_directory_iterator dir_it_start{ it.string() };
-			bf::recursive_directory_iterator dir_it_end;
-			for (; dir_it_start != dir_it_end; dir_it_start++) {
-				std::cout << *dir_it_start<< std::endl;
+				std::cout << it<< std::endl;
 			}
-		}
+		incl = vm["include"].as<std::vector<bf::path>>();
 	}
+
 	if (vm.count("exclude")) {
 		std::cout << "exclude dir: " << std::endl;
-		for (auto it : vm["exclude"].as<std::vector<std::string>>()) {
+		for (auto it : vm["exclude"].as<std::vector<bf::path>>()) {
 			std::cout << it << std::endl;
 		}
+		excl = vm["exclude"].as<std::vector<bf::path>>();
 	}
+	
+	lvl = vm["level"].as<int>();
+	std::cout << "Min file size to search: " << std::endl;
+	std::cout << lvl << std::endl;
+	
+	size = vm["Min_file_size"].as<long long>();
+	std::cout << "Min file size to search: " << std::endl;
+	std::cout << size << std::endl;
+	
+	mask=vm["file_mask"].as<std::string>();
 	std::cout << "Mask for path: " << std::endl;
-	std::cout << vm["file_mask"].as<std::string>() << std::endl;
-	reg.assign(vm["file_mask"].as<std::string>());
-
+	std::cout << mask << std::endl;
+	
+	FileParser parser(incl, excl, lvl, size, mask);
 
 }
