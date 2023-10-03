@@ -66,6 +66,16 @@ int main(int argc, char* argv[])
 	std::cout << "Mask for path: " << std::endl;
 	std::cout << mask << std::endl;
 	
-	FileParser parser(incl, excl, lvl, size, mask);
+	FileParser parser(lvl, size, mask);
+
+	std::vector < std::string> file_list;
+	file_list = parser.ScanListDir(incl, excl);
+
+	std::cout << "--------------" << std:: endl;
+	for (const auto& it : file_list) {
+		std::cout << it << std:: endl;
+	}
+	std::cout << "--------------" << std::endl;
+
 
 }
