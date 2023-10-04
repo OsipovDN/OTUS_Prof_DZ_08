@@ -26,17 +26,13 @@ public:
 	}
 
 	void ScanDir(const bf::path& in_dir, const std::vector < bf::path>& ex_dir, std::vector < bf::path>& list_file) {
-		//boost::smatch match;
-		auto filterPath = [&](const bf::path& p)->bool {return   };
+		auto filterPath = [&](const bf::path& p)->bool {return  (std::find(ex_dir.begin(), ex_dir.end(), p) == std::end(ex_dir)) ? true : false; };
 		auto filterMask = [&](const bf::path& p)->bool {return boost::regex_match(p.filename().string(), *mask); };
 
 		if (level > fact_lvl_dir) {
-
-			//for (auto& it: boost::make_iterator_range(bf::directory_iterator(in_dir), {})
 			for (bf::directory_iterator it{ in_dir }; it != bf::directory_iterator(); ++it
 				| ba::filtered(filterPath)
-				| ba::filtered(filterMask)
-				) {
+				| ba::filtered(filterMask)) {
 				if (bf::is_directory(it->path())) {
 					fact_lvl_dir++;
 					ScanDir(it->path(), ex_dir, list_file);
@@ -47,12 +43,6 @@ public:
 			}
 		}
 	}
-	//boost::smatch same_mask;
-	//	for (const auto& dir : in_dir)
-	//		/*
-	//		| ba::filtered([&](const bf::path& path) { return boost::regex_match(path.filename().string(), same_mask, *mask); })*/ {
-	//	}
-	//}
 
 	std::vector < bf::path> ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir) {
 		std::vector < bf::path> file_list;
