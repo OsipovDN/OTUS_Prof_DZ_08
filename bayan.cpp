@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
@@ -41,8 +42,8 @@ int main(int argc, char* argv[])
 	if (vm.count("include")) {
 		std::cout << "include dir: " << std::endl;
 		for (auto it : vm["include"].as<std::vector<bf::path>>()) {
-				std::cout << it<< std::endl;
-			}
+			std::cout << it << std::endl;
+		}
 		incl = vm["include"].as<std::vector<bf::path>>();
 	}
 
@@ -53,28 +54,30 @@ int main(int argc, char* argv[])
 		}
 		excl = vm["exclude"].as<std::vector<bf::path>>();
 	}
-	
+
 	lvl = vm["level"].as<int>();
 	std::cout << "Min file size to search: " << std::endl;
 	std::cout << lvl << std::endl;
-	
+
 	size = vm["Min_file_size"].as<long long>();
 	std::cout << "Min file size to search: " << std::endl;
 	std::cout << size << std::endl;
-	
-	mask=vm["file_mask"].as<std::string>();
+
+	mask = vm["file_mask"].as<std::string>();
 	std::cout << "Mask for path: " << std::endl;
 	std::cout << mask << std::endl;
-	
+
 	FileParser parser(lvl, size, mask);
 
 	std::vector < bf::path> file_list;
-	file_list= parser.ScanListDir(incl, excl);
+	//Фильтруем директории по глубине сканирования и исключая ненужные
+	file_list = parser.ScanListDir(incl, excl);
 
-	std::cout << "--------------" << std:: endl;
-	for (const auto& it : file_list) {
+	std::cout << "--------------" << std::endl;
+	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
+	/*for (const auto& it : file_list) {
 		std::cout << it << std:: endl;
-	}
+	}*/
 	std::cout << "--------------" << std::endl;
 
 
