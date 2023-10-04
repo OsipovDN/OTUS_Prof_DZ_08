@@ -27,7 +27,7 @@ public:
 
 	void ScanDir(const bf::path& in_dir, const std::vector < bf::path>& ex_dir, std::vector < bf::path>& list_file) {
 		//boost::smatch match;
-		auto filterPath = [&](const bf::path& p)->bool {return   };
+		auto filterPath = [&](const bf::path& p)->bool {return  (std::find(ex_dir.begin(), ex_dir.end(), p)== std::end(ex_dir))?true:false; };
 		auto filterMask = [&](const bf::path& p)->bool {return boost::regex_match(p.filename().string(), *mask); };
 
 		if (level > fact_lvl_dir) {
