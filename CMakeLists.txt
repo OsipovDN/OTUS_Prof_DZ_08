@@ -1,9 +1,7 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
-
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
-
 
 project (bayan VERSION ${PROJECT_VESRION})
 
@@ -18,6 +16,7 @@ program_options filesystem system)
 add_executable (
     bayan
     bayan.cpp
+    src/FileParser.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
@@ -30,6 +29,7 @@ target_include_directories(
     bayan PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
 target_include_directories(
     bayan PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers

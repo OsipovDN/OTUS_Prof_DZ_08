@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
 		("help,h", "produce help")
 		("include,i", po::value<std::vector<bf::path>>()->multitoken(), "Include directories for scanning")
 		("exclude,e", po::value<std::vector<bf::path>>()->multitoken(), "Exclude directories from scanning")
-		("level,l", po::value<int>()->default_value(5), "One for all directories, 0 - only the specified directory without nested")
-		("Min_file_size,s", po::value<long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
-		("file_mask,m", po::value<std::string>()->default_value(".*."), "File mask")
+		("level,l", po::value<int>()->default_value(0), "One for all directories, 0 - only the specified directory without nested")
+		("Min_file_size,s", po::value<unsigned long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
+		("file_mask,m", po::value<std::string>()->default_value(".*."), "File mask") //(\\w+)(\\d+).(\\w+)(\\d+)
 		("Block_size,S", po::value<int>()->default_value(5), "The size of the block used to read files")
 		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32");
 
@@ -56,10 +56,10 @@ int main(int argc, char* argv[])
 	}
 
 	lvl = vm["level"].as<int>();
-	std::cout << "Min file size to search: " << std::endl;
+	std::cout << "Min dir level to search: " << std::endl;
 	std::cout << lvl << std::endl;
 
-	size = vm["Min_file_size"].as<long long>();
+	size = vm["Min_file_size"].as<unsigned long long>();
 	std::cout << "Min file size to search: " << std::endl;
 	std::cout << size << std::endl;
 
@@ -72,13 +72,13 @@ int main(int argc, char* argv[])
 	std::vector < bf::path> file_list;
 	//Фильтруем директории по глубине сканирования и исключая ненужные
 	file_list = parser.ScanListDir(incl, excl);
+	//Фильтруем по маске названия файла и по размеры файла 
+	auto filter_file_list = parser.ScanListFile(file_list);
 
-	std::cout << "--------------" << std::endl;
-	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
-	/*for (const auto& it : file_list) {
-		std::cout << it << std:: endl;
-	}*/
-	std::cout << "--------------" << std::endl;
+	/*std::cout << "--------------" << std::endl;
+	std::for_each(filter_file_list.rbegin(), filter_file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
+
+	std::cout << "--------------" << std::endl;*/
 
 
 }
