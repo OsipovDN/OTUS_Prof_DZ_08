@@ -14,7 +14,7 @@ class FileParser {
 private:
 	int level;
 	int fact_lvl_dir;
-	long long min_file_size;
+	unsigned long long min_file_size;
 	std::unique_ptr<boost::regex> mask;
 
 public:
@@ -25,24 +25,25 @@ public:
 		mask = std::make_unique<boost::regex>(m);
 	}
 
-	void ScanDir(const bf::path& in_dir,const std::vector < bf::path>& ex_dir, std::vector < bf::path>& list_file) {
+	void ScanDir(const bf::path& in_dir, const std::vector < bf::path>& ex_dir, std::vector < bf::path>& list_file) {
+		//boost::smatch match;
+		auto filterPath = [&](const bf::path& p)->bool {return   };
+		auto filterMask = [&](const bf::path& p)->bool {return boost::regex_match(p.filename().string(), *mask); };
 
-		auto filterSize = [&](bf::directory_iterator& it) {return it->path().size() < min_file_size; };
-		
 		if (level > fact_lvl_dir) {
-			bf::directory_iterator it{ in_dir };
-			while (it != bf::directory_iterator()
-				| ba::filtered(filterSize)
-				)
-			{
-				if (bf::is_directory(it->path().string())) {
+
+			//for (auto& it: boost::make_iterator_range(bf::directory_iterator(in_dir), {})
+			for (bf::directory_iterator it{ in_dir }; it != bf::directory_iterator(); ++it
+				| ba::filtered(filterPath)
+				| ba::filtered(filterMask)
+				) {
+				if (bf::is_directory(it->path())) {
 					fact_lvl_dir++;
 					ScanDir(it->path(), ex_dir, list_file);
 					fact_lvl_dir--;
 				}
 				else
 					list_file.push_back(it->path());
-				it++;
 			}
 		}
 	}
@@ -53,7 +54,7 @@ public:
 	//	}
 	//}
 
-	std::vector < bf::path> ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir ) {
+	std::vector < bf::path> ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir) {
 		std::vector < bf::path> file_list;
 		for (const auto& dir : list_dir) {
 			fact_lvl_dir = 0;
