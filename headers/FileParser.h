@@ -3,8 +3,8 @@
 #include <string>
 #include <memory>
 #include <boost/filesystem.hpp>
-#include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
+#include <boost/range/adaptors.hpp>
 #include <boost/regex.hpp>
 
 namespace bf = boost::filesystem;
@@ -25,38 +25,40 @@ public:
 		mask = std::make_unique<boost::regex>(m);
 	}
 
-	void ScanDir(const bf::path& in_dir, const std::vector < bf::path>& ex_dir, std::vector < std::string>& list_file) {
+	void ScanDir(const bf::path& in_dir,const std::vector < bf::path>& ex_dir, std::vector < bf::path>& list_file) {
+
+		auto filterSize = [&](bf::directory_iterator& it) {return it->path().size() < min_file_size; };
 		
 		if (level > fact_lvl_dir) {
 			bf::directory_iterator it{ in_dir };
-			while (it != bf::directory_iterator()) {
+			while (it != bf::directory_iterator()
+				| ba::filtered(filterSize)
+				)
+			{
 				if (bf::is_directory(it->path().string())) {
 					fact_lvl_dir++;
-					std::cout << it->path().string() << "-----is_dir_lvl " << fact_lvl_dir << std::endl;
-					ScanDir(it->path().string(), ex_dir, list_file);	
+					ScanDir(it->path(), ex_dir, list_file);
 					fact_lvl_dir--;
 				}
-				else 
-					list_file.push_back(it->path().string());
+				else
+					list_file.push_back(it->path());
 				it++;
 			}
 		}
-		else
-			return;
 	}
 	//boost::smatch same_mask;
 	//	for (const auto& dir : in_dir)
-	//		/*| ba::filtered([&](const bf::path& path) { return bf::file_size(path) > min_file_size; })
+	//		/*
 	//		| ba::filtered([&](const bf::path& path) { return boost::regex_match(path.filename().string(), same_mask, *mask); })*/ {
 	//	}
 	//}
 
-	std::vector < std::string>&& ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir) {
-		std::vector < std::string> temp;
+	std::vector < bf::path> ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir ) {
+		std::vector < bf::path> file_list;
 		for (const auto& dir : list_dir) {
 			fact_lvl_dir = 0;
-			ScanDir(dir, ex_dir, temp);
+			ScanDir(dir, ex_dir, file_list);
 		}
-		return std::move(temp);
+		return std::move(file_list);
 	}
 };
