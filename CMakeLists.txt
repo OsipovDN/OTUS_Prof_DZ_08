@@ -17,6 +17,7 @@ add_executable (
     bayan
     bayan.cpp
     src/FileParser.cpp
+    Hash_func/md5.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
@@ -33,6 +34,11 @@ target_include_directories(
 target_include_directories(
     bayan PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers
+)
+
+target_include_directories(
+    bayan PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Hash_func
 )
 
 target_include_directories(

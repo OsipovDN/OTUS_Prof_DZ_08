@@ -1,4 +1,6 @@
 ﻿#include "FileParser.h"
+#include "DuplicateSearch.h"
+#include "md5.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
@@ -17,8 +19,11 @@ int main(int argc, char* argv[])
 	std::vector<bf::path> incl;
 	std::vector<bf::path> excl;
 	int lvl;
-	long long size;
+	unsigned long long size;
 	std::string mask;
+
+	unsigned long long block_size;
+	std::string hash;
 
 
 	po::options_description desc("Options");
@@ -29,7 +34,7 @@ int main(int argc, char* argv[])
 		("level,l", po::value<int>()->default_value(0), "One for all directories, 0 - only the specified directory without nested")
 		("Min_file_size,s", po::value<unsigned long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
 		("file_mask,m", po::value<std::string>()->default_value(".*."), "File mask") //(\\w+)(\\d+).(\\w+)(\\d+)
-		("Block_size,S", po::value<int>()->default_value(5), "The size of the block used to read files")
+		("Block_size,S", po::value<unsigned long long>()->default_value(5), "The size of the block used to read files")
 		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32");
 
 	po::variables_map vm;
@@ -56,24 +61,41 @@ int main(int argc, char* argv[])
 	}
 
 	lvl = vm["level"].as<int>();
-	std::cout << "Min dir level to search: " << std::endl;
-	std::cout << lvl << std::endl;
+	std::cout << "Min dir level to search: " << lvl << std::endl;
 
 	size = vm["Min_file_size"].as<unsigned long long>();
-	std::cout << "Min file size to search: " << std::endl;
-	std::cout << size << std::endl;
+	std::cout << "Min file size to search: " << size << std::endl;
 
 	mask = vm["file_mask"].as<std::string>();
-	std::cout << "Mask for path: " << std::endl;
-	std::cout << mask << std::endl;
+	std::cout << "Mask for path: " << mask << std::endl;
 
-	FileParser parser(lvl, size, mask);
+	block_size = vm["Block_size"].as<unsigned long long>();
+	std::cout << "Block_size is: " << block_size << std::endl;
+
+	hash = vm["hash_type"].as<std::string>();
+	std::cout << "Block_size is: " << hash << std::endl;
 
 	std::vector < bf::path> file_list;
+	FileParser parser(lvl, size, mask);
+	DuplicateSearch searcher(block_size, hash);
+
 	//Фильтруем директории по глубине сканирования и исключая ненужные
 	file_list = parser.ScanListDir(incl, excl);
-	//Фильтруем по маске названия файла и по размеры файла 
+	//Фильтруем по маске названия файла и по размеру файла 
 	auto filter_file_list = parser.ScanListFile(file_list);
+
+	std::cout << "--------------" << std::endl;
+	const std::string str{ "word" };
+	MD5 md(str);
+	std::cout << md << std::endl;
+
+
+
+
+
+
+
+
 
 	/*std::cout << "--------------" << std::endl;
 	std::for_each(filter_file_list.rbegin(), filter_file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
@@ -81,4 +103,10 @@ int main(int argc, char* argv[])
 	std::cout << "--------------" << std::endl;*/
 
 
+
+
+
+
+
+	return 0;
 }
