@@ -1,4 +1,6 @@
 #pragma once
+#include <fstream>
+#include <memory>
 #include <string>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -16,6 +18,8 @@ private:
 		NONE
 	};
 	unsigned long long size_block;
+	char* buf;
+	std::streampos hag = 0;
 	Hash h;
 	std::map<std::string, std::vector<bf::path>> list;
 
@@ -29,33 +33,32 @@ private:
 	}
 public:
 	DuplicateSearch(unsigned long long size, std::string& hash) :size_block(size) {
+		buf = new char[size_block];
 		boost::algorithm::to_upper(hash);
 		h = HashType(hash);
 	}
 
 
+	void ReadFile(std::string& path_to_file) {
+		std::ifstream file;
+		;
+		while (!file.eof()) {
+			file.open(path_to_file, std::ios_base::binary);
+			if (!file.is_open()) {
+				std::cout << "File is not open!" << std::endl;
+			}
+			file.seekg(hag, std::ios_base::beg);
+			file.read(buf, static_cast<std::streamsize>(size_block));
 
-	//TODO
-	//Доработать код и внедрить его
+			hag = file.tellg();
+			file.close();
+		}
+		
 
-	//void searh() {
-	//	setlocale(LC_ALL, "rus");
+	}
+	~DuplicateSearch() {
+		delete[] buf;
+	}
 
-	//	const int buf = 2;
-	//	char b[buf];
-	//	std::ifstream in("C:\\Users\\Дмитрий\\source\\repos\\ConsoleApplication3\\Debug\\8.txt",
-	//		std::ios_base::in | std::ios_base::binary);
 
-	//	if (!in.is_open()) { // если файл не открыт
-	//		std::cout << "Файл не может быть открыт!\n"; // сообщить об этом
-	//		return 1;
-	//	}
-
-	//	while (!in.eof()) {
-	//		in.read(b, buf); // считали строку из файла
-	//		std::cout << b << std::endl; // напечатали эту строку
-	//	}
-
-	//	in.close();
-	//}
 };
