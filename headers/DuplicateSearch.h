@@ -32,4 +32,30 @@ public:
 		boost::algorithm::to_upper(hash);
 		h = HashType(hash);
 	}
+
+
+
+	//TODO
+	//Доработать код и внедрить его
+
+	//void searh() {
+	//	setlocale(LC_ALL, "rus");
+
+	//	const int buf = 2;
+	//	char b[buf];
+	//	std::ifstream in("C:\\Users\\Дмитрий\\source\\repos\\ConsoleApplication3\\Debug\\8.txt",
+	//		std::ios_base::in | std::ios_base::binary);
+
+	//	if (!in.is_open()) { // если файл не открыт
+	//		std::cout << "Файл не может быть открыт!\n"; // сообщить об этом
+	//		return 1;
+	//	}
+
+	//	while (!in.eof()) {
+	//		in.read(b, buf); // считали строку из файла
+	//		std::cout << b << std::endl; // напечатали эту строку
+	//	}
+
+	//	in.close();
+	//}
 };
