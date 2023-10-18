@@ -1,18 +1,20 @@
 ﻿#include "FileParser.h"
 #include "DuplicateSearch.h"
 #include "md5.h"
+//STL
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+#include <algorithm>
+//BOOST
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
 #include <boost/regex.hpp>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
 
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
-
 
 int main(int argc, char* argv[])
 {
@@ -73,34 +75,37 @@ int main(int argc, char* argv[])
 	std::cout << "Block_size is: " << block_size << std::endl;
 
 	hash = vm["hash_type"].as<std::string>();
-	std::cout << "Block_size is: " << hash << std::endl;
+	std::cout << "Hash func is: " << hash << std::endl;
 
+
+	//Контейнер отфильтрованных файлов
 	std::vector < bf::path> file_list;
+	//Контейнер для дубликатов
+	std::map <std::string, bf::path> duplicate;
+
+	//Парсер дирректорий
 	FileParser parser(lvl, size, mask);
+	//Поисковик  дупликатов
 	DuplicateSearch searcher(block_size, hash);
 
 	//Фильтруем директории по глубине сканирования и исключая ненужные
 	file_list = parser.ScanListDir(incl, excl);
 	//Фильтруем по маске названия файла и по размеру файла 
-	auto filter_file_list = parser.ScanListFile(file_list);
+	parser.FilterListFile(file_list);
 
+
+
+
+	/*
 	std::cout << "--------------" << std::endl;
 	const std::string str{ "word" };
 	MD5 md(str);
 	std::cout << md << std::endl;
+	*/
+	std::cout << "--------------" << std::endl;
+	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
 
-
-
-
-
-
-
-
-
-	/*std::cout << "--------------" << std::endl;
-	std::for_each(filter_file_list.rbegin(), filter_file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
-
-	std::cout << "--------------" << std::endl;*/
+	std::cout << "--------------" << std::endl;
 
 
 

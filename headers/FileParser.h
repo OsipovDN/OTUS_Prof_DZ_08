@@ -21,7 +21,7 @@ private:
 public:
 	FileParser(int l, unsigned long long mfs, std::string m);
 	std::vector <bf::path> ScanListDir(std::vector<bf::path>& list_dir, const std::vector<bf::path>& ex_dir);
-	std::vector <bf::path> ScanListFile(std::vector <bf::path>& file_list);
+	void FilterListFile(std::vector <bf::path>& file_list);
 	
 
 

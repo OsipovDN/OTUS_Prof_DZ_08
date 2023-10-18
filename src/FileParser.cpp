@@ -35,7 +35,7 @@ std::vector <bf::path> FileParser::ScanListDir(std::vector<bf::path>& list_dir, 
 	return std::move(file_list);
 }
 
-std::vector <bf::path> FileParser::ScanListFile(std::vector <bf::path>& file_list) {
+void FileParser::FilterListFile(std::vector <bf::path>& file_list) {
 	std::vector <bf::path> temp_list;
 	auto FilterSize = [&](const bf::path& p)->bool {return file_size(p) > min_file_size; };
 	auto FilterMask = [&](const bf::path& p)->bool {return !boost::regex_match(p.filename().string(), *mask); };
@@ -45,8 +45,8 @@ std::vector <bf::path> FileParser::ScanListFile(std::vector <bf::path>& file_lis
 		| ba::filtered(FilterMask)) {
 		temp_list.push_back(it);
 	}
+	file_list =temp_list;
 
-	return std::move(temp_list);
 }
 
 

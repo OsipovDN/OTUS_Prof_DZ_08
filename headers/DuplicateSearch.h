@@ -19,7 +19,7 @@ private:
 	};
 	unsigned long long size_block;
 	char* buf;
-	std::streampos hag = 0;
+	std::streampos current_pos = 0;
 	Hash h;
 	std::map<std::string, std::vector<bf::path>> list;
 
@@ -41,21 +41,20 @@ public:
 
 	void ReadFile(std::string& path_to_file) {
 		std::ifstream file;
-		;
 		while (!file.eof()) {
 			file.open(path_to_file, std::ios_base::binary);
 			if (!file.is_open()) {
 				std::cout << "File is not open!" << std::endl;
 			}
-			file.seekg(hag, std::ios_base::beg);
+			file.seekg(current_pos, std::ios_base::beg);
 			file.read(buf, static_cast<std::streamsize>(size_block));
 
-			hag = file.tellg();
+			current_pos = file.tellg();
 			file.close();
 		}
-		
 
 	}
+
 	~DuplicateSearch() {
 		delete[] buf;
 	}
