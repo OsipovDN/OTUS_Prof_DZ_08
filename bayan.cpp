@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	
 
 
-	/*std::cout << "--------------" << std::endl;
+	std::cout << "--------------" << std::endl;
 	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
 
 	std::cout << "--------------" << std::endl;*/
