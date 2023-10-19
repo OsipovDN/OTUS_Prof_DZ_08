@@ -1,9 +1,14 @@
 #pragma once
+#include <iostream>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <algorithm>
+#include <unordered_map>
+
+#include "md5.h"
+
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
 
 
 namespace bf = boost::filesystem;
@@ -17,11 +22,30 @@ private:
 		MD5,
 		NONE
 	};
-	unsigned long long size_block;
+
+	long long size_block;
 	char* buf;
 	std::streampos current_pos = 0;
-	Hash h;
-	std::map<std::string, std::vector<bf::path>> list;
+	Hash hash;
+	std::unordered_map<std::string, std::vector<bf::path>> list;
+
+	std::string GetHash(std::string& block) {
+		std::string hash_transf;
+		switch (hash)
+		{
+		case Hash::CRC32:
+			break;
+		case Hash::MD5:
+			hash_transf = md5(block);
+			
+			break;
+		case Hash::NONE:
+			break;
+		default:
+			break;
+		}
+		return hash_transf;
+	}
 
 	Hash HashType(std::string& type) noexcept {
 		if (type == "MD5")
@@ -32,32 +56,73 @@ private:
 			return Hash::NONE;
 	}
 public:
-	DuplicateSearch(unsigned long long size, std::string& hash) :size_block(size) {
+	DuplicateSearch(long long size, std::string& h) :size_block(size) {
 		buf = new char[size_block];
-		boost::algorithm::to_upper(hash);
-		h = HashType(hash);
+
+		auto myToUpper = [](char ch) {return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
+		std::transform(h.begin(), h.end(), h.begin(), myToUpper);
+		hash = HashType(h);
+
 	}
 
+	long long CheckSizeBlock(std::ifstream& f) {
+		f.seekg(current_pos, std::ios_base::beg);
+		auto start = f.tellg();
+		f.seekg(0, std::ios_base::end);
+		auto end = f.tellg();
+		auto count_byte = end - start;
+		if (count_byte < size_block)
+			return  size_block - count_byte;
+		return 0;
+	}
 
-	void ReadFile(std::string& path_to_file) {
+	std::string ReadBlock(bf::path& path) {
 		std::ifstream file;
-		while (!file.eof()) {
-			file.open(path_to_file, std::ios_base::binary);
-			if (!file.is_open()) {
-				std::cout << "File is not open!" << std::endl;
-			}
-			file.seekg(current_pos, std::ios_base::beg);
-			file.read(buf, static_cast<std::streamsize>(size_block));
+		file.open(path.string(), std::ios_base::binary);
+		if (!file.is_open()) {
+			std::cout << "File is not open!" << std::endl;
+		}
+		auto remains = CheckSizeBlock(file);
 
-			current_pos = file.tellg();
-			file.close();
+		file.seekg(current_pos, std::ios_base::beg);
+		file.read(buf, size_block);
+		if (remains) {
+
 		}
 
+		file.close();
+		return std::string{ buf };
+
+	}
+
+	void search(std::vector<bf::path>& list_path) {
+		std::string temp_hash;
+		for (auto& file : list_path) {
+			temp_hash = ReadBlock(file);
+			temp_hash = GetHash(temp_hash);
+			if (list.find(temp_hash) != list.end())
+				list[temp_hash].push_back(file);
+			else
+				list.insert(std::pair(temp_hash, std::vector{ file }));
+
+
+		}
+		current_pos += size_block;
+		print();
 	}
 
 	~DuplicateSearch() {
 		delete[] buf;
 	}
 
+	void print() {
+		for (auto h : list) {
+			std::cout << h.first << "----" << std::endl;
+			for (auto i = h.second.begin(); i != h.second.end(); ++i) {
+				std::cout << *i << std::endl;
+			}
+			std::cout << "+++++" << std::endl;
+		}
+	}
 
 };
