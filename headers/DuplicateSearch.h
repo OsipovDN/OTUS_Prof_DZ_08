@@ -35,11 +35,11 @@ private:
 		switch (hash)
 		{
 		case Hash::CRC32:
-			hash_transf = CRC32_function((unsigned char*)block.c_str(),size_block);
+			hash_transf = CRC32_function((unsigned char*)block.c_str(), size_block);
 			break;
 		case Hash::MD5:
 			hash_transf = md5(block);
-			
+
 			break;
 		case Hash::NONE:
 			break;
@@ -67,14 +67,15 @@ public:
 
 	}
 
-	long long CheckSizeBlock(std::ifstream& f) {
+	unsigned long long CheckSizeBlock(std::ifstream& f) {
 		f.seekg(current_pos, std::ios_base::beg);
 		unsigned long long start = f.tellg();
 		f.seekg(0, std::ios_base::end);
 		unsigned long long end = f.tellg();
-		auto count_byte = end - start;
-		if (count_byte < size_block)
-			return  size_block - count_byte;
+		auto remains = end - start;
+		if (remains < size_block && remains>0) {
+			return  remains;
+		}
 		return 0;
 	}
 
@@ -84,13 +85,17 @@ public:
 		if (!file.is_open()) {
 			std::cout << "File is not open!" << std::endl;
 		}
-		auto remains = CheckSizeBlock(file);
+		auto count_byte = CheckSizeBlock(file);
 
 		file.seekg(current_pos, std::ios_base::beg);
 		file.read(buf, size_block);
-		if (remains) {
-
+		if (count_byte != 0) {
+			for (auto i = count_byte; i != size_block; ++i) {
+				buf[i] = '\0';
+			}
 		}
+		std::cout << count_byte << std::endl;
+		std::cout << std::string{ buf } << std::endl;
 
 		file.close();
 		return std::string{ buf };
@@ -110,7 +115,7 @@ public:
 
 		}
 		current_pos += size_block;
-		print();
+		//print();
 	}
 
 	~DuplicateSearch() {
