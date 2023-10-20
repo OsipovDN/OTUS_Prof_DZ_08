@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 		("level,l", po::value<int>()->default_value(0), "One for all directories, 0 - only the specified directory without nested")
 		("Min_file_size,s", po::value<unsigned long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
 		("file_mask,m", po::value<std::string>()->default_value(".*."), "File mask") //(\\w+)(\\d+).(\\w+)(\\d+)
-		("Block_size,S", po::value<long long>()->default_value(5), "The size of the block used to read files")
+		("Block_size,S", po::value<unsigned long long>()->default_value(5), "The size of the block used to read files")
 		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32");
 
 	po::variables_map vm;
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	mask = vm["file_mask"].as<std::string>();
 	std::cout << "Mask for path: " << mask << std::endl;
 
-	block_size = vm["Block_size"].as<long long>();
+	block_size = vm["Block_size"].as<unsigned long long>();
 	std::cout << "Block_size is: " << block_size << std::endl;
 
 	hash = vm["hash_type"].as<std::string>();
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 	std::cout << "--------------" << std::endl;
 	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
 
-	std::cout << "--------------" << std::endl;*/
+	std::cout << "--------------" << std::endl;
 
 
 
