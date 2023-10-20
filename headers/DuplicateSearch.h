@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "md5.h"
+#include "crc32.h"
 
 #include <boost/filesystem.hpp>
 
@@ -23,7 +24,7 @@ private:
 		NONE
 	};
 
-	long long size_block;
+	unsigned long long size_block;
 	char* buf;
 	std::streampos current_pos = 0;
 	Hash hash;
@@ -34,6 +35,7 @@ private:
 		switch (hash)
 		{
 		case Hash::CRC32:
+			hash_transf = CRC32_function((unsigned char*)block.c_str(),size_block);
 			break;
 		case Hash::MD5:
 			hash_transf = md5(block);
@@ -56,7 +58,7 @@ private:
 			return Hash::NONE;
 	}
 public:
-	DuplicateSearch(long long size, std::string& h) :size_block(size) {
+	DuplicateSearch(unsigned long long size, std::string& h) :size_block(size) {
 		buf = new char[size_block];
 
 		auto myToUpper = [](char ch) {return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
@@ -67,9 +69,9 @@ public:
 
 	long long CheckSizeBlock(std::ifstream& f) {
 		f.seekg(current_pos, std::ios_base::beg);
-		auto start = f.tellg();
+		unsigned long long start = f.tellg();
 		f.seekg(0, std::ios_base::end);
-		auto end = f.tellg();
+		unsigned long long end = f.tellg();
 		auto count_byte = end - start;
 		if (count_byte < size_block)
 			return  size_block - count_byte;
