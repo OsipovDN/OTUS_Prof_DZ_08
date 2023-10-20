@@ -20,15 +20,6 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
-	std::vector<bf::path> incl;
-	std::vector<bf::path> excl;
-	int lvl;
-	unsigned long long size;
-	std::string mask;
-
-	long long block_size;
-	std::string hash;
-
 
 	po::options_description desc("Options");
 	desc.add_options()
@@ -45,62 +36,72 @@ int main(int argc, char* argv[])
 	po::store(parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	if (vm.count("help"))
+	if (vm.count("help")) 
 		std::cout << desc << '\n';
+	else {
 
-	if (vm.count("include")) {
-		std::cout << "include dir: " << std::endl;
-		for (auto it : vm["include"].as<std::vector<bf::path>>()) {
-			std::cout << it << std::endl;
+		std::vector<bf::path> incl;
+		std::vector<bf::path> excl;
+		int lvl;
+		unsigned long long size;
+		std::string mask;
+
+		long long block_size;
+		std::string hash;
+		if (vm.count("include")) {
+			std::cout << "include dir: " << std::endl;
+			for (auto it : vm["include"].as<std::vector<bf::path>>()) {
+				std::cout << it << std::endl;
+			}
+			incl = vm["include"].as<std::vector<bf::path>>();
 		}
-		incl = vm["include"].as<std::vector<bf::path>>();
+
+		if (vm.count("exclude")) {
+			std::cout << "exclude dir: " << std::endl;
+			for (auto it : vm["exclude"].as<std::vector<bf::path>>()) {
+				std::cout << it << std::endl;
+			}
+			excl = vm["exclude"].as<std::vector<bf::path>>();
+		}
+
+		lvl = vm["level"].as<int>();
+		std::cout << "Min dir level to search: " << lvl << std::endl;
+
+		size = vm["Min_file_size"].as<unsigned long long>();
+		std::cout << "Min file size to search: " << size << std::endl;
+
+		mask = vm["file_mask"].as<std::string>();
+		std::cout << "Mask for path: " << mask << std::endl;
+
+		block_size = vm["Block_size"].as<unsigned long long>();
+		std::cout << "Block_size is: " << block_size << std::endl;
+
+		hash = vm["hash_type"].as<std::string>();
+		std::cout << "Hash func is: " << hash << std::endl;
+
+
+		//Контейнер отфильтрованных файлов
+		std::vector < bf::path> file_list;
+		//Контейнер для дубликатов
+		std::map <std::string, bf::path> duplicate;
+
+		//Парсер дирректорий
+		FileParser parser(lvl, size, mask);
+		//Поисковик  дупликатов
+		DuplicateSearch searcher(block_size, hash);
+
+		//Фильтруем директории по глубине сканирования и исключая ненужные
+		file_list = parser.ScanListDir(incl, excl);
+		//Фильтруем по маске названия файла и по размеру файла 
+		parser.FilterListFile(file_list);
+
+		searcher.search(file_list);
 	}
 
-	if (vm.count("exclude")) {
-		std::cout << "exclude dir: " << std::endl;
-		for (auto it : vm["exclude"].as<std::vector<bf::path>>()) {
-			std::cout << it << std::endl;
-		}
-		excl = vm["exclude"].as<std::vector<bf::path>>();
-	}
-
-	lvl = vm["level"].as<int>();
-	std::cout << "Min dir level to search: " << lvl << std::endl;
-
-	size = vm["Min_file_size"].as<unsigned long long>();
-	std::cout << "Min file size to search: " << size << std::endl;
-
-	mask = vm["file_mask"].as<std::string>();
-	std::cout << "Mask for path: " << mask << std::endl;
-
-	block_size = vm["Block_size"].as<unsigned long long>();
-	std::cout << "Block_size is: " << block_size << std::endl;
-
-	hash = vm["hash_type"].as<std::string>();
-	std::cout << "Hash func is: " << hash << std::endl;
-
-
-	//Контейнер отфильтрованных файлов
-	std::vector < bf::path> file_list;
-	//Контейнер для дубликатов
-	std::map <std::string, bf::path> duplicate;
-
-	//Парсер дирректорий
-	FileParser parser(lvl, size, mask);
-	//Поисковик  дупликатов
-	DuplicateSearch searcher(block_size, hash);
-
-	//Фильтруем директории по глубине сканирования и исключая ненужные
-	file_list = parser.ScanListDir(incl, excl);
-	//Фильтруем по маске названия файла и по размеру файла 
-	parser.FilterListFile(file_list);
-
-	searcher.search(file_list);
 
 
 
 
-	
 	/*std::cout << "--------------" << std::endl;
 	const std::string str{ "word" };
 	std::string fact_hash = md5(str);
@@ -109,14 +110,13 @@ int main(int argc, char* argv[])
 	fact_hash = md5(str);
 	std::cout << fact_hash << std::endl;
 	std::cout << "------" << std::endl;*/
-	
 
 
-	std::cout << "--------------" << std::endl;
-	std::for_each(file_list.rbegin(), file_list.rend(),[](const bf::path & file){ std::cout << file << std::endl; });
 
-	std::cout << "--------------" << std::endl;
+	/*std::cout << "--------------" << std::endl;
+	std::for_each(file_list.rbegin(), file_list.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
 
+	std::cout << "--------------" << std::endl;*/
 
 
 
