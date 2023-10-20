@@ -94,8 +94,8 @@ public:
 				buf[i] = '\0';
 			}
 		}
-		std::cout << count_byte << std::endl;
-		std::cout << std::string{ buf } << std::endl;
+		//std::cout << count_byte << std::endl;
+		//std::cout << std::string{ buf } << std::endl;
 
 		file.close();
 		return std::string{ buf };
