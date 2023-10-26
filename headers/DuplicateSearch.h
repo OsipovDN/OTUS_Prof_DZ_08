@@ -86,7 +86,7 @@ public:
 			std::cout << "File is not open!" << std::endl;
 		}
 		auto count_byte = CheckSizeBlock(file);
-
+		//TODO Проверка выход на за пределы файла
 		file.seekg(current_pos, std::ios_base::beg);
 		file.read(buf, size_block);
 		if (count_byte != 0) {
@@ -102,7 +102,7 @@ public:
 
 	}
 
-	void search(std::vector<bf::path>& list_path) {
+	void scanBlock(std::vector<bf::path>& list_path) {
 		std::string temp_hash;
 		for (auto& file : list_path) {
 			temp_hash = ReadBlock(file);
@@ -116,6 +116,11 @@ public:
 		}
 		current_pos += size_block;
 		//print();
+	}
+
+	 void searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>& list_duplicate) {
+		std::vector <std::vector <bf::path>> temp_dupl;
+
 	}
 
 	~DuplicateSearch() {

@@ -18,6 +18,16 @@
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
 
+
+void printListDuplicate(std::vector <std::vector <bf::path>>& list_duplicate) {
+	for (const auto& list : list_duplicate) {
+		for (const auto& file: list) {
+			std::cout << file << std::endl;
+		}
+		std::cout<<std::endl;
+	}
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -83,7 +93,7 @@ int main(int argc, char* argv[])
 		//Контейнер отфильтрованных файлов
 		std::vector < bf::path> file_list;
 		//Контейнер для дубликатов
-		std::map <std::string, bf::path> duplicate;
+		std::vector <std::vector <bf::path>> duplicate;
 
 		//Парсер дирректорий
 		FileParser parser(lvl, size, mask);
@@ -95,31 +105,22 @@ int main(int argc, char* argv[])
 		//Фильтруем по маске названия файла и по размеру файла 
 		parser.FilterListFile(file_list);
 
-		searcher.search(file_list);
+		/*std::cout << "--------------" << std::endl;
+		std::for_each(file_list.rbegin(), file_list.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
+
+		std::cout << "--------------" << std::endl;*/
+
+		//Ищем дубликаты
+		searcher.searchDuplicate(file_list, duplicate);
+		//Вывод в консоль
+		printListDuplicate(duplicate);
+
+		
+
+	
+
+
 	}
-
-
-
-
-
-	/*std::cout << "--------------" << std::endl;
-	const std::string str{ "word" };
-	std::string fact_hash = md5(str);
-	std::cout << fact_hash << std::endl;
-	std::cout <<"------" << std::endl;
-	fact_hash = md5(str);
-	std::cout << fact_hash << std::endl;
-	std::cout << "------" << std::endl;*/
-
-
-
-	/*std::cout << "--------------" << std::endl;
-	std::for_each(file_list.rbegin(), file_list.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
-
-	std::cout << "--------------" << std::endl;*/
-
-
-
 
 
 
