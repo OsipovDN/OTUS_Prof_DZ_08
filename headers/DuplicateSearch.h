@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <unordered_map>
+#include <tuple>
 
 #include "md5.h"
 #include "crc32.h"
@@ -79,62 +80,122 @@ public:
 		return 0;
 	}
 
-	std::string ReadBlock(bf::path& path) {
-		std::ifstream file;
-		file.open(path.string(), std::ios_base::binary);
-		if (!file.is_open()) {
+	//std::string ReadBlock(bf::path& path) {
+	//	std::ifstream file;
+	//	file.open(path.string(), std::ios_base::binary);
+	//	if (!file.is_open()) {
+	//		std::cout << "File is not open!" << std::endl;
+	//	}
+	//	auto count_byte = CheckSizeBlock(file);
+	//	//TODO Проверка выход на за пределы файла
+	//	file.seekg(current_pos, std::ios_base::beg);
+	//	file.read(buf, size_block);
+	//	if (count_byte != 0) {
+	//		for (auto i = count_byte; i != size_block; ++i) {
+	//			buf[i] = '\0';
+	//		}
+	//	}
+	//	//std::cout << count_byte << std::endl;
+	//	//std::cout << std::string{ buf } << std::endl;
+
+	//	file.close();
+	//	return std::string{ buf };
+
+	//}
+
+	//void scanBlock(std::vector<bf::path>& list_path) {
+	//	std::string temp_hash;
+	//	for (auto& file : list_path) {
+	//		temp_hash = ReadBlock(file);
+	//		temp_hash = GetHash(temp_hash);
+	//		if (list.find(temp_hash) != list.end())
+	//			list[temp_hash].push_back(file);
+	//		else
+	//			list.insert(std::pair(temp_hash, std::vector{ file }));
+
+
+	//	}
+	//	current_pos += size_block;
+	//	//print();
+	//}
+
+	std::tuple<std::string, std::string> ReadBlock(bf::path& first_path, bf::path& second_path)const {
+		std::ifstream file1, file2;
+		std::string first_file_block, second_file_block;
+
+		file1.open(first_path.string(), std::ios_base::binary);
+		file2.open(second_path.string(), std::ios_base::binary);
+		if (!file1.is_open() || !file2.is_open()) {
 			std::cout << "File is not open!" << std::endl;
 		}
-		auto count_byte = CheckSizeBlock(file);
-		//TODO Проверка выход на за пределы файла
-		file.seekg(current_pos, std::ios_base::beg);
-		file.read(buf, size_block);
+
+		auto count_byte = CheckSizeBlock(file1);
+		file1.seekg(current_pos, std::ios_base::beg);
+		file1.read(buf, size_block);
+		if (count_byte != 0, count_byte != 0) {
+			for (auto i = count_byte; i != size_block; ++i) {
+				buf[i] = '\0';
+			}
+		}
+		first_file_block = std::string{ buf };
+
+		count_byte = CheckSizeBlock(file2);
+		file2.seekg(current_pos, std::ios_base::beg);
+		file2.read(buf, size_block);
 		if (count_byte != 0) {
 			for (auto i = count_byte; i != size_block; ++i) {
 				buf[i] = '\0';
 			}
 		}
+		second_file_block = std::string{ buf };
 		//std::cout << count_byte << std::endl;
 		//std::cout << std::string{ buf } << std::endl;
 
-		file.close();
-		return std::string{ buf };
+		file1.close();
+		file2.close();
+		return std::make_tuple{ first_file_block ,second_file_block };
 
 	}
 
-	void scanBlock(std::vector<bf::path>& list_path) {
-		std::string temp_hash;
-		for (auto& file : list_path) {
-			temp_hash = ReadBlock(file);
-			temp_hash = GetHash(temp_hash);
-			if (list.find(temp_hash) != list.end())
-				list[temp_hash].push_back(file);
-			else
-				list.insert(std::pair(temp_hash, std::vector{ file }));
+	bool checkHash(std::tuple<std::string, std::string>& p) {
+		//TODO
+		return true;
+	}
+
+	bool scanBlocks(bf::path& first, bf::path& second)const {
+		std::tuple <std::string, std::string > blocks;
+		blocks = ReadBlock(first, second);
+		checkHash(blocks);
+		if (list.find(temp_hash) != list.end())
+			list[temp_hash].push_back(file);
+		else
+			list.insert(std::pair(temp_hash, std::vector{ file }));
 
 
+	}
+	current_pos += size_block;
+	//print();
+}
+
+void searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>& list_duplicate) {
+	for (auto file = list_path.cbegin(); file != list_path.cend() - 1; ++file) {
+		scanBlocks(file, (file + 1));
+	}
+
+}
+
+~DuplicateSearch() {
+	delete[] buf;
+}
+
+void print() {
+	for (auto h : list) {
+		std::cout << h.first << "----" << std::endl;
+		for (auto i = h.second.begin(); i != h.second.end(); ++i) {
+			std::cout << *i << std::endl;
 		}
-		current_pos += size_block;
-		//print();
+		std::cout << "+++++" << std::endl;
 	}
-
-	 void searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>& list_duplicate) {
-		std::vector <std::vector <bf::path>> temp_dupl;
-
-	}
-
-	~DuplicateSearch() {
-		delete[] buf;
-	}
-
-	void print() {
-		for (auto h : list) {
-			std::cout << h.first << "----" << std::endl;
-			for (auto i = h.second.begin(); i != h.second.end(); ++i) {
-				std::cout << *i << std::endl;
-			}
-			std::cout << "+++++" << std::endl;
-		}
-	}
+}
 
 };
