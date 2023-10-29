@@ -69,27 +69,34 @@ void DuplicateSearch::scanBlock(std::vector<bf::path>& list_path) {
 	current_pos += size_block;
 	//print();
 }
-void DuplicateSearch::checkHashInList(std::string& h, bf::path& path) {
+void DuplicateSearch::checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& temp) {
 
-	if (list.find(h) != list.end())
-		list[h].push_back(path);
+	if (temp.find(h) != temp.end())
+		temp[h].push_back(path);
 	else
-		list.insert(std::pair(h, std::vector{ path }));
+		temp.insert(std::pair(h, std::vector{ path }));
 
 }
 void DuplicateSearch::searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>&) {
 	std::string block;
 	std::string h;
-
+	std::unordered_map<std::string, std::vector<bf::path>> temp;
 	for (auto file : list_path) {
 		block = readBlock(file);
 		h = getHash(block);
-		checkHashInList(h, file);
+		checkHashInList(h, file,temp);
 	}
-	print();
+	//чистим одиночные файлы
+	for (auto it = temp.begin(); it != temp.end();) {
+		if (it->second.size() == 1)
+			it = temp.erase(it);
+		else
+			++it;
+	}
+	print(temp);
 }
-void DuplicateSearch::print() {
-	for (auto const& [key, value] : list) {
+void DuplicateSearch::print(std::unordered_map<std::string, std::vector<bf::path>>& l) {
+	for (auto const& [key, value] : l) {
 		std::cout << key << "----" << std::endl;
 		for (auto i = value.begin(); i != value.end(); ++i) {
 			std::cout << *i << std::endl;

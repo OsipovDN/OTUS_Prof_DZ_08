@@ -41,13 +41,13 @@ public:
 	std::string readBlock(bf::path& path);
 	void scanBlock(std::vector<bf::path>& list_path);
 
-	void checkHashInList(std::string& h, bf::path& path);
+	void checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& temp);
 
 	//Основная функция поиска дубликатов
 	void searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>&);
 
 	//Вывод на ечать списка дубликатов
-	void print();
+	void print(std::unordered_map<std::string, std::vector<bf::path>>& l);
 	~DuplicateSearch();
 
 
