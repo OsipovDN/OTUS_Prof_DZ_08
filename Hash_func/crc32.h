@@ -1,6 +1,6 @@
 #pragma once
 
-std::string CRC32_function(unsigned char* buf, unsigned long long len)
+inline std::string CRC32_function(unsigned char* buf, unsigned long long len)
 {
 	unsigned long crc_table[256];
 	unsigned long crc;

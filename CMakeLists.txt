@@ -17,6 +17,7 @@ add_executable (
     bayan
     bayan.cpp
     src/FileParser.cpp
+    src/DuplicateSearch.cpp
     Hash_func/md5.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)

@@ -1,14 +1,13 @@
 ﻿#include "FileParser.h"
 #include "DuplicateSearch.h"
-#include "md5.h"
+
 
 
 //STL
 #include <iostream>
 #include <vector>
-#include <map>
-#include <string>
-#include <algorithm>
+
+
 //BOOST
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
