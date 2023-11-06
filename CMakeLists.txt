@@ -78,7 +78,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(bayan PRIVATE
         /EHsc
-        /W4
+        #/W4
         /WX
     )
 
