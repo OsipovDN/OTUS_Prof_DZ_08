@@ -332,7 +332,7 @@ MD5& MD5::finalize()
 }
 
 //////////////////////////////
-#pragma warning(disable : 4996)
+//#pragma warning(disable : 4996)
 // return hex representation of digest as string
 std::string MD5::hexdigest() const
 {
