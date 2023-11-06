@@ -53,8 +53,6 @@ std::string DuplicateSearch::readBlock(bf::path& path) {
 	}
 	file.seekg(current_pos, std::ios_base::beg);
 	file.read(buf, size_block);
-	//std::cout << count_byte << std::endl;
-	//std::cout << std::string{ buf } << std::endl;
 	file.close();
 	return std::string{ buf };
 }
@@ -77,31 +75,83 @@ void DuplicateSearch::checkHashInList(std::string& h, bf::path& path, std::unord
 		temp.insert(std::pair(h, std::vector{ path }));
 
 }
-void DuplicateSearch::searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>&) {
+
+//»щем совпадени€ в списке по одному блоку
+void DuplicateSearch::findConcurrence(std::vector<bf::path>& list_path, std::unordered_map<std::string, std::vector<bf::path>>& l) {
 	std::string block;
 	std::string h;
-	std::unordered_map<std::string, std::vector<bf::path>> temp;
 	for (auto file : list_path) {
 		block = readBlock(file);
 		h = getHash(block);
-		checkHashInList(h, file,temp);
+		checkHashInList(h, file, l);
 	}
-	//чистим одиночные файлы
-	for (auto it = temp.begin(); it != temp.end();) {
+}
+
+//„мстим список от лишних уникальных файлов
+void DuplicateSearch::cleanList(std::unordered_map<std::string, std::vector<bf::path>>& l) {
+	for (auto it = l.begin(); it != l.end();) {
 		if (it->second.size() == 1)
-			it = temp.erase(it);
+			it = l.erase(it);
 		else
 			++it;
 	}
-	print(temp);
 }
+
+bool DuplicateSearch::isEnd(std::unordered_map<std::string, std::vector<bf::path>>& files) {
+	bool flag = true;
+	for (auto const& [key, value] : files) {
+		for (auto i = value.begin(); i != value.end(); ++i) {
+			if (static_cast<unsigned long long>(current_pos) <= bf::file_size(*i)) {
+				flag = false;
+			}
+		}
+	}
+	return flag;
+}
+
+void DuplicateSearch::searchDuplicate(std::vector < bf::path> conteiner) {
+	static int s = 0;
+	std::unordered_map<std::string, std::vector<bf::path>> temp;
+	findConcurrence(conteiner, temp);
+	cleanList(temp);
+	
+	if (isEnd(temp)) {
+		for (auto h : temp) {
+			list.push_back( h.second );
+		}
+	}
+	
+	else  {	
+		current_pos += size_block;
+		for (auto it : temp) {
+			std::cout << ++s << std::endl;
+			searchDuplicate(it.second);
+			std::cout << --s << std::endl;
+		}
+		current_pos -= size_block;
+	}
+	
+
+}
+
+
 void DuplicateSearch::print(std::unordered_map<std::string, std::vector<bf::path>>& l) {
 	for (auto const& [key, value] : l) {
-		std::cout << key << "----" << std::endl;
+		std::cout << "start temp" << std::endl;
 		for (auto i = value.begin(); i != value.end(); ++i) {
 			std::cout << *i << std::endl;
 		}
-		std::cout << "+++++" << std::endl;
+		std::cout << "end temp" << std::endl;
+	}
+}
+
+void DuplicateSearch::print(std::vector<std::vector<bf::path>>& l) {
+	for (auto const& vec : l) {
+		std::cout << "start list" << std::endl;
+		for (auto file = vec.begin(); file != vec.end(); ++file) {
+			std::cout << *file << std::endl;
+		}
+		std::cout << "end list" << std::endl;
 	}
 }
 DuplicateSearch::~DuplicateSearch() {

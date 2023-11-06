@@ -110,14 +110,15 @@ int main(int argc, char* argv[])
 		std::cout << "--------------" << std::endl;*/
 
 		//Ищем дубликаты
-		searcher.searchDuplicate(file_list, duplicate);
+		searcher.searchDuplicate(file_list);
+		duplicate = searcher.getList();
 		//Вывод в консоль
 		printListDuplicate(duplicate);
 
 		
 
 	
-
+		
 
 	}
 

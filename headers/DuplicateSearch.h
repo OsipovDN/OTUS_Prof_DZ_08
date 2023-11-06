@@ -27,8 +27,7 @@ private:
 	std::streampos current_pos = 0;
 	char* buf;
 	Hash hash;
-	std::unordered_map<std::string, std::vector<bf::path>> list;
-
+	std::vector <std::vector <bf::path>> list;
 	//Формирования Хэша считанного блока
 	std::string getHash(std::string& block);
 	//Проверка типа hash-функции
@@ -41,13 +40,18 @@ public:
 	std::string readBlock(bf::path& path);
 	void scanBlock(std::vector<bf::path>& list_path);
 
-	void checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& temp);
+	void checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& l);
 
+	void findConcurrence(std::vector<bf::path>& list_path, std::unordered_map<std::string, std::vector<bf::path>>& l);
+	void cleanList(std::unordered_map<std::string, std::vector<bf::path>>& l);
+	bool isEnd(std::unordered_map<std::string, std::vector<bf::path>>& files);
 	//Основная функция поиска дубликатов
-	void searchDuplicate(std::vector<bf::path>& list_path, std::vector <std::vector <bf::path>>&);
+	void searchDuplicate(std::vector<bf::path> list_path);
 
-	//Вывод на ечать списка дубликатов
+	//Вывод на печать списка дубликатов (вспомогательные функции)
 	void print(std::unordered_map<std::string, std::vector<bf::path>>& l);
+	void print(std::vector<std::vector<bf::path>>& l);
+	std::vector <std::vector <bf::path>> getList() { return list; }
 	~DuplicateSearch();
 
 
