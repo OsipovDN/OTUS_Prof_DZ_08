@@ -32,7 +32,7 @@ std::vector <bf::path> FileParser::ScanListDir(std::vector<bf::path>& list_dir, 
 		fact_lvl_dir = 0;
 		ScanDir(dir, ex_dir, file_list);
 	}
-	return std::move(file_list);
+	return file_list;
 }
 
 void FileParser::FilterListFile(std::vector <bf::path>& file_list) {
