@@ -1,38 +1,45 @@
-﻿cmake_minimum_required (VERSION 3.2)
-
+﻿cmake_minimum_required (VERSION 3.8)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
 
 project (bayan VERSION ${PROJECT_VESRION})
 
-find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    link_directories(${Boost_LIBRARY_DIRS})
-endif()
+set (CMAKE_CXX_STANDARD 17) 
 
 find_package(GTest)
 configure_file(version.h.in version.h)
 
+find_package (Boost REQUIRED COMPONENTS  
+program_options filesystem system)
+
 add_executable (
     bayan
     bayan.cpp
+    src/FileParser.cpp
+    src/DuplicateSearch.cpp
+    Hash_func/md5.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
+if(Boost_FOUND)
+  target_include_directories(bayan PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries (bayan ${Boost_LIBRARIES})
+endif()
 
 target_include_directories(
     bayan PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
 target_include_directories(
     bayan PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/headers
+)
+
+target_include_directories(
+    bayan PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Hash_func
 )
 
 target_include_directories(
@@ -54,10 +61,9 @@ target_link_libraries(
     bayan_gtest PRIVATE
     ${GTEST_BOTH_LIBRARIES}
 )
-set_target_properties(bayan PROPERTIES
-	CXX_STANDARD 17
-	CXX_STANDARD_REQUIRED ON
-)
+
+
+
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
