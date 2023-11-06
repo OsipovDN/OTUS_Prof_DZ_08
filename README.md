@@ -1,3 +1,16 @@
+# Описание опций программы
+
+|Options |Comments
+|----|---------|  
+ |***-h [ --help ]***|produce help  
+  |***-i [ --include ] arg***|Include directories for scanning  
+  |***-e [ --exclude ] arg***|Exclude directories from scanning  
+  |***-l [ --level ] arg (=0)***|One for all directories, 0 - only the specified directory without nested  
+  |***-s [ --Min_file_size ] arg (=1)***|By default, all files larger than 1 byte are checked  
+  |***-m [ --file_mask ] arg (=(\w+)(\d+).(\w+)(\d+))***|File mask  
+  |***-S [ --Block_size ] arg (=5)***|The size of the block used to read files  
+  |***-t [ --hash_type ] arg (=crc32)***|Hashing algorithm type: md5, crc32  
+
 # Задание 8
 ## bayan
 ### Условие  
