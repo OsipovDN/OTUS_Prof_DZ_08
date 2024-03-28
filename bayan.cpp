@@ -115,14 +115,7 @@ int main(int argc, char* argv[])
 		//Вывод в консоль
 		printListDuplicate(duplicate);
 
-		
-
-	
-		
-
 	}
-
-
 
 	return 0;
 }
