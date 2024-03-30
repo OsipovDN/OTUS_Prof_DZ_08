@@ -104,7 +104,7 @@ void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile, HashFil
 }
 
 //„мстим список от лишних уникальных файлов
-void DuplicateSearcher::cleanList(HashFiles& listCurrentHash)
+void DuplicateSearcher::removeUniqHash(HashFiles& listCurrentHash)
 {
 	for (auto it = listCurrentHash.begin(); it != listCurrentHash.end();)
 	{
@@ -117,18 +117,17 @@ void DuplicateSearcher::cleanList(HashFiles& listCurrentHash)
 
 bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
 {
-	bool flag = true;
-	for (auto const& [key, value] : listCurrentHashl)
+	for (auto const& [hash, files] : listCurrentHashl)
 	{
-		for (auto i = value.begin(); i != value.end(); ++i) 
+		for (auto file = files.begin(); file != files.end(); ++file)
 		{
-			if (static_cast<unsigned long long>(_currentPos) <= bf::file_size(*i)) 
+			if (static_cast<unsigned long long>(_currentPos) <= bf::file_size(*file))
 			{
-				flag = false;
+				return false;
 			}
 		}
 	}
-	return flag;
+	return true;
 }
 
 void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner) 
@@ -136,7 +135,7 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 	static int s = 0;
 	std::unordered_map<std::string, std::vector<bf::path>> temp;
 	findConcurrence(conteiner, temp);
-	cleanList(temp);
+	removeUniqHash(temp);
 	
 	if (isEnd(temp)) 
 	{

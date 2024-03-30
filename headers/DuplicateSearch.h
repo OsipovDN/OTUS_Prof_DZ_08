@@ -65,10 +65,28 @@ private:
 	std::string readBlockInFile(bf::path& path);
 
 	//void scanBlock(std::vector<bf::path>& list_path);
-	void checkHashInList(std::string& hash, bf::path& file, HashFiles& listCurrentHash);
 
+	/*! The method checks for the presence of this hash in the general list. If such a hash occurs, the file is added to the general list.
+		\param hash - the hash you are looking for.
+		\param file - tthe file that this hash belongs to.
+		\param listCurrentHash - List of all hashes of the current block position.
+	*/
+	void checkHashInList(std::string& hash, bf::path& file, HashFiles& listCurrentHash);
+	/*! This method reads a block of the current file from
+		a given position and compares it with the available blocks in the current hash list.
+		\param listFile -The file list being checked.
+		\param listCurrentHash - List of all hashes of the current block position.
+	*/
 	void findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHashl);
-	void cleanList(HashFiles& listCurrentHash);
+	/*! This method removes unique hashes from the list of current ones
+		\param listCurrentHash - List of all hashes of the current block position.
+	*/
+	void removeUniqHash(HashFiles& listCurrentHash);
+	/*! The method checks for the end of the file. If the current position of the block being
+	checked exceeds the file size, the file is excluded from further comparison.
+		\param listCurrentHash - List of all hashes of the current block position.
+		\return bool - Indicates the end of the file.
+	*/
 	bool isEnd(HashFiles& listCurrentHashl);
 
 public:
