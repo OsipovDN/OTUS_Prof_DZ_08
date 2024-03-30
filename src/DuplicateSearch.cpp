@@ -106,10 +106,10 @@ void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile, HashFil
 //„мстим список от лишних уникальных файлов
 void DuplicateSearcher::cleanList(HashFiles& listCurrentHash)
 {
-	for (auto it = l.begin(); it != l.end();)
+	for (auto it = listCurrentHash.begin(); it != listCurrentHash.end();)
 	{
 		if (it->second.size() == 1)
-			it = l.erase(it);
+			it = listCurrentHash.erase(it);
 		else
 			++it;
 	}
