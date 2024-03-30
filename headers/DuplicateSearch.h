@@ -24,6 +24,7 @@
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
+using HashFiles=std::unordered_map<std::string, std::vector<bf::path>>;
 
 class DuplicateSearcher {
 private:
@@ -64,10 +65,11 @@ private:
 	std::string readBlockInFile(bf::path& path);
 
 	//void scanBlock(std::vector<bf::path>& list_path);
-	void checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& l);
-	void findConcurrence(std::vector<bf::path>& list_path, std::unordered_map<std::string, std::vector<bf::path>>& l);
-	void cleanList(std::unordered_map<std::string, std::vector<bf::path>>& l);
-	bool isEnd(std::unordered_map<std::string, std::vector<bf::path>>& files);
+	void checkHashInList(std::string& hash, bf::path& file, HashFiles& listCurrentHash);
+
+	void findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHashl);
+	void cleanList(HashFiles& listCurrentHash);
+	bool isEnd(HashFiles& listCurrentHashl);
 
 public:
 	/*!Constructor of a class for forming an object.
@@ -80,11 +82,14 @@ public:
 	*/
 	~DuplicateSearcher();
 	
-	//Основная функция поиска дубликатов
-	void searchDuplicate(std::vector<bf::path> list_path);
+	/*!the method searches for duplicate files in the specified list of files.
+		\param listPath - list of files to search for duplicates.
+	*/
+	void searchDuplicate(std::vector<bf::path> listPath);
+
 
 	//Вывод на печать списка дубликатов (вспомогательные функции)
-	void print(std::unordered_map<std::string, std::vector<bf::path>>& l);
+	void print(HashFiles& l);
 	void print(std::vector<std::vector<bf::path>>& l);
 	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }
 	

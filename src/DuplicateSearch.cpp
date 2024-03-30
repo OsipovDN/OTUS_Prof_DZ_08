@@ -82,29 +82,29 @@ void DuplicateSearcher::scanBlock(std::vector<bf::path>& list_path) {
 }
 */
 
-void DuplicateSearcher::checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& temp) 
+void DuplicateSearcher::checkHashInList(std::string& hash, bf::path& file, HashFiles& listCurrentHash)
 {
-	if (temp.find(h) != temp.end())
-		temp[h].push_back(path);
+	if (listCurrentHash.find(hash) != listCurrentHash.end())
+		listCurrentHash[hash].push_back(file);
 	else
-		temp.insert(std::pair(h, std::vector{ path }));
+		listCurrentHash.insert(std::pair(hash, std::vector{ file }));
 }
 
 //»щем совпадени€ в списке по одному блоку
-void DuplicateSearcher::findConcurrence(std::vector<bf::path>& list_path, std::unordered_map<std::string, std::vector<bf::path>>& l) 
+void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHash)
 {
 	std::string block;
-	std::string h;
-	for (auto file : list_path) 
+	std::string hash;
+	for (auto file : listFile)
 	{
 		block = readBlockInFile(file);
-		h = getHash(block);
-		checkHashInList(h, file, l);
+		hash = getHash(block);
+		checkHashInList(hash, file, listCurrentHash);
 	}
 }
 
 //„мстим список от лишних уникальных файлов
-void DuplicateSearcher::cleanList(std::unordered_map<std::string, std::vector<bf::path>>& l)
+void DuplicateSearcher::cleanList(HashFiles& listCurrentHash)
 {
 	for (auto it = l.begin(); it != l.end();)
 	{
@@ -115,10 +115,10 @@ void DuplicateSearcher::cleanList(std::unordered_map<std::string, std::vector<bf
 	}
 }
 
-bool DuplicateSearcher::isEnd(std::unordered_map<std::string, std::vector<bf::path>>& files) 
+bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
 {
 	bool flag = true;
-	for (auto const& [key, value] : files)
+	for (auto const& [key, value] : listCurrentHashl)
 	{
 		for (auto i = value.begin(); i != value.end(); ++i) 
 		{
@@ -145,8 +145,8 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 			_listDuplicate.push_back( h.second );
 		}
 	}
-	
-	else  {	
+	else  
+	{	
 		_currentPos += _blockSize;
 		for (auto it : temp) 
 		{
@@ -156,8 +156,6 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 		}
 		_currentPos -= _blockSize;
 	}
-	
-
 }
 
 
