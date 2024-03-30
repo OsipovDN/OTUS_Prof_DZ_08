@@ -106,9 +106,11 @@ public:
 	void searchDuplicate(std::vector<bf::path> listPath);
 
 
+	
+	//Вывод на печать списка hash'ей текущего читаемого блока
+	void print(HashFiles& listCurrentHashl);
 	//Вывод на печать списка дубликатов (вспомогательные функции)
-	void print(HashFiles& l);
-	void print(std::vector<std::vector<bf::path>>& l);
+	void print(std::vector<std::vector<bf::path>>& listDuplicate);
 	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }
 	
 };

@@ -158,7 +158,7 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 }
 
 
-void DuplicateSearcher::print(std::unordered_map<std::string, std::vector<bf::path>>& l) 
+void DuplicateSearcher::print(HashFiles& listCurrentHashl)
 {
 	for (auto const& [key, value] : l) 
 	{
@@ -170,12 +170,12 @@ void DuplicateSearcher::print(std::unordered_map<std::string, std::vector<bf::pa
 		std::cout << "end temp" << std::endl;
 	}
 }
-void DuplicateSearcher::print(std::vector<std::vector<bf::path>>& l)
+void DuplicateSearcher::print(std::vector<std::vector<bf::path>>& listDuplicate)
 {
-	for (auto const& vec : l) 
+	for (auto const& files : listDuplicate)
 	{
 		std::cout << "start list" << std::endl;
-		for (auto file = vec.begin(); file != vec.end(); ++file) 
+		for (auto file = files.begin(); file != files.end(); ++file)
 		{
 			std::cout << *file << std::endl;
 		}
