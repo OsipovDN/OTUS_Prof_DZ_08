@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.14)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
@@ -10,7 +10,11 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(GTest)
 configure_file(version.h.in version.h)
 
-find_package (Boost REQUIRED COMPONENTS program_options filesystem system)
+find_package (Boost 1.83 REQUIRED COMPONENTS program_options filesystem system)
+
+if(Boost_FOUND)
+message(STATUS "XEP")
+endif()
 
 add_executable (
     bayan

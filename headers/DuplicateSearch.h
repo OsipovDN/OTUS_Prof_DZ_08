@@ -1,59 +1,92 @@
 #pragma once
-//stl
+/*! \file
+	\brief header file DuplicateSearch.h
+*/
+
+///@{
+
+//STL
 #include <fstream>
 #include <memory>
 #include <unordered_map>
 #include <tuple>
 #include <string>
 #include <algorithm>
+//Boost
+#include <boost/filesystem.hpp>
 //Hash
 #include "md5.h"
 #include "crc32.h"
-//Boost
-#include <boost/filesystem.hpp>
 
+/*! \brief Class "DuplicateSearcher".
+
+	The class implements methods for searching for duplicate files in directories
+	with specified user-defined comparison parameters
+*/
 namespace bf = boost::filesystem;
 
-
-class DuplicateSearch {
+class DuplicateSearcher {
 private:
+	/*! \brief EnumClass "Hash".
+
+	The EnumClass types of hash functions.
+	*/
 	enum class Hash {
 		CRC32,
 		MD5,
 		NONE
 	};
+	unsigned long long _blockSize;		//block size for comparison
+	std::streampos _currentPos = 0;		//the current position of the block
+	char* _buf;		//block
+	Hash _hash;		//type of hash function
+	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
 
-	unsigned long long size_block;
-	std::streampos current_pos = 0;
-	char* buf;
-	Hash hash;
-	std::vector <std::vector <bf::path>> list;
-	//Формирования Хэша считанного блока
+	/*! The method calculates the hash according to the hash function selected by the user.
+		\param block - the block where the hash is calculated.
+		\return std::string - hash.
+	*/
 	std::string getHash(std::string& block);
-	//Проверка типа hash-функции
+	/*! The method Determines the type of hash function selected by the user.
+		\param type - user-defined type.
+		\return Hash - hash.
+	*/
 	Hash hashType(std::string& type) noexcept;
-	//Проверяет колличество оставшихся байт
-	unsigned long long checkSizeBlock(std::ifstream& f);
-public:
-	DuplicateSearch(unsigned long long size, std::string& h);
+	/*! The method checks the block size to match the one specified by the user.
+		\param file - the file in which the check is performed.
+		\return unsigned long long - block size.
+	*/
+	unsigned long long checkSizeBlock(std::ifstream& file);
+	/*! The method reads a block from the specified file.
+		\param path - the file.
+		\return std::string - the read block.
+	*/
+	std::string readBlockInFile(bf::path& path);
 
-	std::string readBlock(bf::path& path);
-	void scanBlock(std::vector<bf::path>& list_path);
-
+	//void scanBlock(std::vector<bf::path>& list_path);
 	void checkHashInList(std::string& h, bf::path& path, std::unordered_map<std::string, std::vector<bf::path>>& l);
-
 	void findConcurrence(std::vector<bf::path>& list_path, std::unordered_map<std::string, std::vector<bf::path>>& l);
 	void cleanList(std::unordered_map<std::string, std::vector<bf::path>>& l);
 	bool isEnd(std::unordered_map<std::string, std::vector<bf::path>>& files);
+
+public:
+	/*!Constructor of a class for forming an object.
+		\param blockSize - block size for comparison.
+		\param hash - type of hash function.
+	*/
+	DuplicateSearcher(unsigned long long blockSize, std::string& hash);
+	/*!Destructor.
+		frees up the memory allocated for the block being compared
+	*/
+	~DuplicateSearcher();
+	
 	//Основная функция поиска дубликатов
 	void searchDuplicate(std::vector<bf::path> list_path);
 
 	//Вывод на печать списка дубликатов (вспомогательные функции)
 	void print(std::unordered_map<std::string, std::vector<bf::path>>& l);
 	void print(std::vector<std::vector<bf::path>>& l);
-	std::vector <std::vector <bf::path>> getList() { return list; }
-	~DuplicateSearch();
-
-
-
+	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }
+	
 };
+///@}

@@ -18,13 +18,18 @@ namespace bf = boost::filesystem;
 namespace po = boost::program_options;
 
 
-void printListDuplicate(std::vector <std::vector <bf::path>>& list_duplicate) {
-	for (const auto& list : list_duplicate) {
+void printListDuplicate(std::vector <std::vector <bf::path>>& listDuplicate) {
+	for (const auto& list : listDuplicate) {
 		for (const auto& file: list) {
 			std::cout << file << std::endl;
 		}
 		std::cout<<std::endl;
 	}
+}
+
+void printFileList(std::vector < bf::path> list)
+{
+	std::for_each(list.rbegin(), list.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
 }
 
 int main(int argc, char* argv[])
@@ -90,30 +95,43 @@ int main(int argc, char* argv[])
 
 
 		//Контейнер отфильтрованных файлов
-		std::vector < bf::path> file_list;
+		std::vector < bf::path> fileList;
 		//Контейнер для дубликатов
-		std::vector <std::vector <bf::path>> duplicate;
+		std::vector <std::vector <bf::path>> duplicateFile;
 
 		//Парсер дирректорий
+		/*
+		Парсер проводит фильтрацию файлов по указанным пользователем параметрам
+		- по глубине прохода дирикторий
+		- по размеру файлов
+		- по маске файлов
+		*/
 		FileParser parser(lvl, size, mask);
-		//Поисковик  дупликатов
-		DuplicateSearch searcher(block_size, hash);
+		//Поисковик  дубликатов
+		/*
+		Поисковик ищет дубликаты файлов с использованием пользовательских параметров
+		- размер сканиремых блоков в файле
+		- hash функция для алгоритма сравнения
+		*/
+		DuplicateSearcher searcher(block_size, hash);
 
 		//Фильтруем директории по глубине сканирования и исключая ненужные
-		file_list = parser.ScanListDir(incl, excl);
+		fileList = parser.ScanDirectories(incl, excl);
+
 		//Фильтруем по маске названия файла и по размеру файла 
-		parser.FilterListFile(file_list);
-
-		/*std::cout << "--------------" << std::endl;
-		std::for_each(file_list.rbegin(), file_list.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
-
-		std::cout << "--------------" << std::endl;*/
-
+		std::vector < bf::path> filterfileList;
+		filterfileList =parser.FilterListFile(fileList);
+		/*
+		На данной итерации мы получаем полный список всех фалов в просканированных дирректориях отвечающих
+		параметрам заданным пользователем
+		*/
+		printFileList(filterfileList);
+		
 		//Ищем дубликаты
-		searcher.searchDuplicate(file_list);
-		duplicate = searcher.getList();
+		searcher.searchDuplicate(fileList);
+		duplicateFile = searcher.getList();
 		//Вывод в консоль
-		printListDuplicate(duplicate);
+		printListDuplicate(duplicateFile);
 
 	}
 
