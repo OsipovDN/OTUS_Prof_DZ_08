@@ -12,10 +12,6 @@ configure_file(version.h.in version.h)
 
 find_package (Boost 1.83 REQUIRED COMPONENTS program_options filesystem system)
 
-if(Boost_FOUND)
-message(STATUS "XEP")
-endif()
-
 add_executable (
     bayan
     bayan.cpp
@@ -65,24 +61,21 @@ target_link_libraries(
     ${GTEST_BOTH_LIBRARIES}
 )
 
-
-
-
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(bayan PRIVATE 
-        -g
-        -Wall
-        -Wextra
-        -Werror
-        -pedantic
+        #-g
+        #-Wall
+        #-Wextra
+        #-Werror
+        #-pedantic
     )
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(bayan PRIVATE
-        /EHsc
+        #/EHsc
         #/W4
-        /WX
+        #/WX
     )
 
 endif()

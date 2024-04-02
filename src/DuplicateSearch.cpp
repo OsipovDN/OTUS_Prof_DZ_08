@@ -132,7 +132,7 @@ bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
 
 void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner) 
 {
-	static int s = 0;
+	//static int s = 0;
 	std::unordered_map<std::string, std::vector<bf::path>> temp;
 	findConcurrence(conteiner, temp);
 	removeUniqHash(temp);
@@ -149,18 +149,18 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 		_currentPos += _blockSize;
 		for (auto it : temp) 
 		{
-			std::cout << ++s << std::endl;
+			//std::cout << ++s << std::endl;
 			searchDuplicate(it.second);
-			std::cout << --s << std::endl;
+			//std::cout << --s << std::endl;
 		}
 		_currentPos -= _blockSize;
 	}
 }
 
 
-void DuplicateSearcher::print(HashFiles& listCurrentHashl)
+void DuplicateSearcher::print(HashFiles& listCurrentHash)
 {
-	for (auto const& [key, value] : l) 
+	for (auto const& [key, value] : listCurrentHash)
 	{
 		std::cout << "start temp" << std::endl;
 		for (auto i = value.begin(); i != value.end(); ++i) 
