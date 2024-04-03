@@ -1,8 +1,9 @@
 #include "DuplicateSearch.h"
 
-DuplicateSearcher::DuplicateSearcher(unsigned long long blockSize, std::string& hash) :_blockSize(blockSize)
+DuplicateSearcher::DuplicateSearcher(unsigned long long blockSize, std::string& hash)
 {
-	_buf = new char[_blockSize];
+	_reader = std::make_unique<FileReader> (blockSize);
+
 	auto myToUpper = [](char ch) {return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
 	std::transform(hash.begin(), hash.end(), hash.begin(), myToUpper);
 	_hash = hashType(hash);
@@ -39,37 +40,37 @@ Hash DuplicateSearcher::hashType(std::string& type) noexcept
 	else
 		return Hash::NONE;
 }
-unsigned long long DuplicateSearcher::checkSizeBlock(std::ifstream& file) 
-{
-	file.seekg(_currentPos, std::ios_base::beg);
-	unsigned long long start = file.tellg();
-	file.seekg(0, std::ios_base::end);
-	unsigned long long end = file.tellg();
-	auto remains = end - start;
-	return  remains;
-}
+//unsigned long long DuplicateSearcher::checkSizeBlock(std::ifstream& file) 
+//{
+//	file.seekg(_currentPos, std::ios_base::beg);
+//	unsigned long long start = file.tellg();
+//	file.seekg(0, std::ios_base::end);
+//	unsigned long long end = file.tellg();
+//	auto remains = end - start;
+//	return  remains;
+//}
 
-std::string DuplicateSearcher::readBlockInFile(bf::path& path) 
-{
-	std::ifstream file;
-	file.open(path.string(), std::ios_base::binary);
-	if (!file.is_open()) 
-	{
-		std::cout << "File is not open!" << std::endl;
-	}
-
-	auto count_byte = checkSizeBlock(file);
-	if (count_byte < _blockSize || count_byte == 0) 
-	{
-		for (auto i = count_byte; i != _blockSize; ++i)
-			_buf[i] = '\0';
-	}
-
-	file.seekg(_currentPos, std::ios_base::beg);
-	file.read(_buf, _blockSize);
-	file.close();
-	return std::string{ _buf };
-}
+//std::string DuplicateSearcher::readBlockInFile(bf::path& path) 
+//{
+//	std::ifstream file;
+//	file.open(path.string(), std::ios_base::binary);
+//	if (!file.is_open()) 
+//	{
+//		std::cout << "File is not open!" << std::endl;
+//	}
+//
+//	auto count_byte = checkSizeBlock(file);
+//	if (count_byte < _blockSize || count_byte == 0) 
+//	{
+//		for (auto i = count_byte; i != _blockSize; ++i)
+//			_buf[i] = '\0';
+//	}
+//
+//	file.seekg(_currentPos, std::ios_base::beg);
+//	file.read(_buf, _blockSize);
+//	file.close();
+//	return std::string{ _buf };
+//}
 /*
 void DuplicateSearcher::scanBlock(std::vector<bf::path>& list_path) {
 	std::string temp_hash;

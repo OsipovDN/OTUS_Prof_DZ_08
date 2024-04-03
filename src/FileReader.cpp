@@ -10,24 +10,34 @@ unsigned long long FileReader::checkSizeBlock(std::ifstream& file)
 	return  remains;
 }
 
-std::string FileReader::readBlockInFile(bf::path& path)
+Data FileReader::readFile(bf::path& path)
 {
+	Data tempData;
 	std::ifstream file;
+	_currentPos = 0;
+	
 	file.open(path.string(), std::ios_base::binary);
 	if (!file.is_open())
 	{
 		std::cout << "File is not open!" << std::endl;
 	}
-
-	auto count_byte = checkSizeBlock(file);
-	if (count_byte < _blockSize || count_byte == 0)
+	unsigned long long count_byte = 0;
+	do
 	{
-		for (auto i = count_byte; i != _blockSize; ++i)
-			_buf[i] = '\0';
-	}
+		_currentPos += _blockSize;
+		count_byte = checkSizeBlock(file);
+		if (count_byte < _blockSize || count_byte == 0)
+		{
+			for (auto i = count_byte; i != _blockSize; ++i)
+				_buf[i] = '\0';
+		}
 
-	file.seekg(_currentPos, std::ios_base::beg);
-	file.read(_buf, _blockSize);
+		file.seekg(_currentPos, std::ios_base::beg);
+		file.read(_buf, _blockSize);
+		
+		tempData.emplace_back(std::string {_buf} );
+
+	}while (count_byte!=0);
 	file.close();
-	return std::string{ _buf };
+	return tempData;
 }

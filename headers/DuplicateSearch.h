@@ -45,12 +45,9 @@ enum class Hash {
 
 class DuplicateSearcher {
 private:
-	std::unique_ptr <FileReader> _reader;	//Reader of file
-	unsigned long long _blockSize;			//block size for comparison
-	std::streampos _currentPos = 0;			//the current position of the block
-	char* _buf;								//block
-	Hash _hash;								//type of hash function
-	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
+	std::unique_ptr <FileReader> _reader;					///<Reader of file
+	std::vector <std::vector <bf::path>> _listDuplicate;	///<list of duplicate files;
+	Hash _hash;												///<type of hash function
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -66,12 +63,12 @@ private:
 		\param file - the file in which the check is performed.
 		\return unsigned long long - block size.
 	*/
-	unsigned long long checkSizeBlock(std::ifstream& file);
+	//unsigned long long checkSizeBlock(std::ifstream& file);
 	/*! The method reads a block from the specified file.
 		\param path - the file.
 		\return std::string - the read block.
 	*/
-	std::string readBlockInFile(bf::path& path);
+	//std::string readBlockInFile(bf::path& path);
 
 	//void scanBlock(std::vector<bf::path>& list_path);
 

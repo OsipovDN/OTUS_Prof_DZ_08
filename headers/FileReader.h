@@ -1,16 +1,32 @@
 #pragma once
-#include "FileInfo"
+//STL
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+//Boost
+#include <boost/filesystem.hpp>
 
+namespace bf = boost::filesystem;
+using Data = std::vector<std::string>;
 
+enum class Hash;
 
 class FileReader
 {
 private:
-	std::streampos _currentPos = 0;			//the current position of the block
+	unsigned long long _blockSize;		///<block size for comparison
+	std::streampos _currentPos;		///<the current position of the block
+	char* _buf;							///<block
 
 	unsigned long long checkSizeBlock(std::ifstream& file);
 public:
-	FileReader() = default;
-	std::string readBlockInFile(bf::path& path);
+	FileReader(unsigned long long size) :
+		_blockSize(size)
+	{
+		_buf = new char[_blockSize];
+	}
+	~FileReader() { delete[] _buf; }
+	Data readFile(bf::path& path);
 
 };
