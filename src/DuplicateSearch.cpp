@@ -30,7 +30,7 @@ std::string DuplicateSearcher::getHash(std::string& block)
 	}
 	return hash_transf;
 }
-DuplicateSearcher::Hash DuplicateSearcher::hashType(std::string& type) noexcept
+Hash DuplicateSearcher::hashType(std::string& type) noexcept
 {
 	if (type == "MD5")
 		return Hash::MD5;
@@ -130,7 +130,7 @@ bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
 	return true;
 }
 
-void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner) 
+void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner) 
 {
 	//static int s = 0;
 	std::unordered_map<std::string, std::vector<bf::path>> temp;

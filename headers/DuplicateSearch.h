@@ -15,32 +15,41 @@
 //Boost
 #include <boost/filesystem.hpp>
 //Hash
+#include "FileReader.h"
 #include "md5.h"
 #include "crc32.h"
 
 /*! \brief Class "DuplicateSearcher".
-
 	The class implements methods for searching for duplicate files in directories
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
 using HashFiles=std::unordered_map<std::string, std::vector<bf::path>>;
 
+struct FileInfo
+{
+	std::vector<std::string> _fileData;
+	std::string _fileName;
+	size_t _fileSize;
+	bf::path _filePath;
+};
+
+/*! \brief EnumClass "Hash".
+	The EnumClass types of hash functions.
+*/
+enum class Hash {
+	CRC32,
+	MD5,
+	NONE
+};
+
 class DuplicateSearcher {
 private:
-	/*! \brief EnumClass "Hash".
-
-	The EnumClass types of hash functions.
-	*/
-	enum class Hash {
-		CRC32,
-		MD5,
-		NONE
-	};
-	unsigned long long _blockSize;		//block size for comparison
-	std::streampos _currentPos = 0;		//the current position of the block
-	char* _buf;		//block
-	Hash _hash;		//type of hash function
+	std::unique_ptr <FileReader> _reader;	//Reader of file
+	unsigned long long _blockSize;			//block size for comparison
+	std::streampos _currentPos = 0;			//the current position of the block
+	char* _buf;								//block
+	Hash _hash;								//type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
 
 	/*! The method calculates the hash according to the hash function selected by the user.
@@ -103,7 +112,7 @@ public:
 	/*!the method searches for duplicate files in the specified list of files.
 		\param listPath - list of files to search for duplicates.
 	*/
-	void searchDuplicate(std::vector<bf::path> listPath);
+	void searchDuplicate(std::vector<bf::path>& listPath);
 
 
 	

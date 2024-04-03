@@ -1,22 +1,18 @@
-﻿#include "FileParser.h"
-#include "DuplicateSearch.h"
-
-
-
+﻿
 //STL
 #include <iostream>
 #include <vector>
-
-
 //BOOST
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
 #include <boost/regex.hpp>
 
+#include "FileScaner.h"
+#include "DuplicateSearch.h"
+
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
-
 
 void printListDuplicate(std::vector <std::vector <bf::path>>& listDuplicate) {
 	for (const auto& list : listDuplicate) {
@@ -105,21 +101,16 @@ int main(int argc, char* argv[])
 		- по размеру файлов
 		- по маске файлов
 		*/
-		FileParser parser(lvl, size, mask);
-
+		FileScaner parser(lvl, size, mask);
+		//Фильтруем директории по глубине сканирования и исключая ненужные
+		parser.scanDirectories(incl, excl);
+		fileList = parser.getFiles();
 		/*
 		Поисковик ищет дубликаты файлов с использованием пользовательских параметров
 		- размер сканиремых блоков в файле
 		- hash функция для алгоритма сравнения
 		*/
 		DuplicateSearcher searcher(block_size, hash);
-
-		//Фильтруем директории по глубине сканирования и исключая ненужные
-		fileList = parser.ScanDirectories(incl, excl);
-
-		//Фильтруем по маске названия файла и по размеру файла 
-		std::vector < bf::path> filterfileList;
-		filterfileList =parser.FilterListFile(fileList);
 		/*
 		На данной итерации мы получаем полный список всех фалов в просканированных дирректориях отвечающих
 		параметрам заданным пользователем

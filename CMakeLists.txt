@@ -15,8 +15,9 @@ find_package (Boost 1.83 REQUIRED COMPONENTS program_options filesystem system)
 add_executable (
     bayan
     bayan.cpp
-    src/FileParser.cpp
     src/DuplicateSearch.cpp
+    src/FileReader.cpp
+    src/FileScaner.cpp
     Hash_func/md5.cpp
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
