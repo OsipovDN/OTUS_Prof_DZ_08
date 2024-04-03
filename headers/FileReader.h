@@ -22,7 +22,8 @@ private:
 	unsigned long long checkSizeBlock(std::ifstream& file);
 public:
 	FileReader(unsigned long long size) :
-		_blockSize(size)
+		_blockSize(size),
+		_currentPos(0)
 	{
 		_buf = new char[_blockSize];
 	}

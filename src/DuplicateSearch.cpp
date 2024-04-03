@@ -94,14 +94,14 @@ void DuplicateSearcher::checkHashInList(std::string& hash, bf::path& file, HashF
 //»щем совпадени€ в списке по одному блоку
 void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHash)
 {
-	std::string block;
+	/*std::string block;
 	std::string hash;
 	for (auto file : listFile)
 	{
 		block = readBlockInFile(file);
 		hash = getHash(block);
 		checkHashInList(hash, file, listCurrentHash);
-	}
+	}*/
 }
 
 //„мстим список от лишних уникальных файлов

@@ -22,9 +22,10 @@ Data FileReader::readFile(bf::path& path)
 		std::cout << "File is not open!" << std::endl;
 	}
 	unsigned long long count_byte = 0;
+	file.seekg(0, std::ios::end);
+	int size = file.tellg();
 	do
 	{
-		_currentPos += _blockSize;
 		count_byte = checkSizeBlock(file);
 		if (count_byte < _blockSize || count_byte == 0)
 		{
@@ -33,11 +34,12 @@ Data FileReader::readFile(bf::path& path)
 		}
 
 		file.seekg(_currentPos, std::ios_base::beg);
+		_currentPos += _blockSize;
+
 		file.read(_buf, _blockSize);
-		
 		tempData.emplace_back(std::string {_buf} );
 
-	}while (count_byte!=0);
+	}while (_currentPos <= size);
 	file.close();
 	return tempData;
 }
