@@ -28,6 +28,7 @@ public:
 		_buf = new char[_blockSize];
 	}
 	~FileReader() { delete[] _buf; }
-	Data readFile(bf::path& path);
+	unsigned long long getBlockSize() { return _blockSize; }
+	Data readFile(const bf::path& path);
 
 };

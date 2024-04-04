@@ -24,14 +24,22 @@
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
-using HashFiles=std::unordered_map<std::string, std::vector<bf::path>>;
+using HashFiles = std::unordered_map<std::string, std::vector<bf::path>>;
 
 struct FileInfo
 {
-	std::vector<std::string> _fileData;
-	std::string _fileName;
-	size_t _fileSize;
-	bf::path _filePath;
+	bf::path filePath;
+	size_t fileSize;
+	std::string fileName;
+	std::vector<std::string> fileData;
+
+	FileInfo(const bf::path& path) :
+		filePath(path), 
+		fileSize(bf::file_size(path)),
+		fileName(path.filename().string()) 
+	{
+		fileData.reserve(fileSize);
+	}
 };
 
 /*! \brief EnumClass "Hash".
@@ -46,8 +54,11 @@ enum class Hash {
 class DuplicateSearcher {
 private:
 	std::unique_ptr <FileReader> _reader;					///<Reader of file
-	std::vector <std::vector <bf::path>> _listDuplicate;	///<list of duplicate files;
+	std::vector <FileInfo> _filesData;
+	std::vector <std::vector <bf::path>> _listDuplicate;	///<list of duplicate files
 	Hash _hash;												///<type of hash function
+	std::streampos _currentPos;								///<the current position of the block
+	unsigned long long _blockSize;							///<block size for comparison
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -68,7 +79,7 @@ private:
 		\param path - the file.
 		\return std::string - the read block.
 	*/
-	//std::string readBlockInFile(bf::path& path);
+	std::string readBlockInFile(bf::path& path);
 
 	//void scanBlock(std::vector<bf::path>& list_path);
 
@@ -83,7 +94,7 @@ private:
 		\param listFile -The file list being checked.
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHashl);
+	void findConcurrence(std::vector<bf::path>& filelist, HashFiles& listCurrentHash);
 	/*! This method removes unique hashes from the list of current ones
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
@@ -95,29 +106,35 @@ private:
 	*/
 	bool isEnd(HashFiles& listCurrentHashl);
 
+	void readFileInfo(std::vector <bf::path>& fileList);
+
 public:
 	/*!Constructor of a class for forming an object.
 		\param blockSize - block size for comparison.
 		\param hash - type of hash function.
 	*/
-	DuplicateSearcher(unsigned long long blockSize, std::string& hash);
+	DuplicateSearcher(std::unique_ptr<FileReader> reader, std::string& hash);
 	/*!Destructor.
 		frees up the memory allocated for the block being compared
 	*/
-	~DuplicateSearcher();
-	
+	~DuplicateSearcher()=default;
+
 	/*!the method searches for duplicate files in the specified list of files.
 		\param listPath - list of files to search for duplicates.
 	*/
 	void searchDuplicate(std::vector<bf::path>& listPath);
-
-
-	
-	//Вывод на печать списка hash'ей текущего читаемого блока
-	void print(HashFiles& listCurrentHashl);
-	//Вывод на печать списка дубликатов (вспомогательные функции)
-	void print(std::vector<std::vector<bf::path>>& listDuplicate);
+	/*!the method searches for duplicate files in the specified list of files.
+		\return std::vector <std::vector <bf::path>> - list of duplicate files.
+	*/
 	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }
+	/*!The method outputs all files according to the current hash
+		\param listCurrentHash - List of all hashes of the current block position
+	*/
+	void print(HashFiles& listCurrentHashl);
+	/*!The method outputs grouped lists of duplicate files
+	*/
+	void print();
 	
+
 };
 ///@}

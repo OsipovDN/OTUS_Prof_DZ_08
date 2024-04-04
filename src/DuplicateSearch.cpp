@@ -1,18 +1,15 @@
 #include "DuplicateSearch.h"
 
-DuplicateSearcher::DuplicateSearcher(unsigned long long blockSize, std::string& hash)
+DuplicateSearcher::DuplicateSearcher(std::unique_ptr<FileReader> reader, std::string& hash)
 {
-	_reader = std::make_unique<FileReader> (blockSize);
-
+	_reader = std::move(reader);
+	_blockSize = _reader->getBlockSize();
 	auto myToUpper = [](char ch) {return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
 	std::transform(hash.begin(), hash.end(), hash.begin(), myToUpper);
 	_hash = hashType(hash);
 }
-DuplicateSearcher::~DuplicateSearcher() 
-{
-	delete[] _buf;
-}
-std::string DuplicateSearcher::getHash(std::string& block) 
+
+std::string DuplicateSearcher::getHash(std::string& block)
 {
 	std::string hash_transf;
 	switch (_hash)
@@ -50,31 +47,31 @@ Hash DuplicateSearcher::hashType(std::string& type) noexcept
 //	return  remains;
 //}
 
-//std::string DuplicateSearcher::readBlockInFile(bf::path& path) 
-//{
-//	std::ifstream file;
-//	file.open(path.string(), std::ios_base::binary);
-//	if (!file.is_open()) 
-//	{
-//		std::cout << "File is not open!" << std::endl;
-//	}
-//
-//	auto count_byte = checkSizeBlock(file);
-//	if (count_byte < _blockSize || count_byte == 0) 
-//	{
-//		for (auto i = count_byte; i != _blockSize; ++i)
-//			_buf[i] = '\0';
-//	}
-//
-//	file.seekg(_currentPos, std::ios_base::beg);
-//	file.read(_buf, _blockSize);
-//	file.close();
-//	return std::string{ _buf };
-//}
+std::string DuplicateSearcher::readBlockInFile(bf::path& path)
+{
+	std::ifstream file;
+	file.open(path.string(), std::ios_base::binary);
+	if (!file.is_open())
+	{
+		std::cout << "File is not open!" << std::endl;
+	}
+
+	auto count_byte = checkSizeBlock(file);
+	if (count_byte < _blockSize || count_byte == 0)
+	{
+		for (auto i = count_byte; i != _blockSize; ++i)
+			_buf[i] = '\0';
+	}
+
+	file.seekg(_currentPos, std::ios_base::beg);
+	file.read(_buf, _blockSize);
+	file.close();
+	return std::string{ _buf };
+}
 /*
 void DuplicateSearcher::scanBlock(std::vector<bf::path>& list_path) {
 	std::string temp_hash;
-	for (auto& file : list_path) 
+	for (auto& file : list_path)
 	{
 		temp_hash = readBlockInFile(file);
 		temp_hash = getHash(temp_hash);
@@ -92,16 +89,16 @@ void DuplicateSearcher::checkHashInList(std::string& hash, bf::path& file, HashF
 }
 
 //»щем совпадени€ в списке по одному блоку
-void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHash)
+void DuplicateSearcher::findConcurrence(std::vector<bf::path>& filelist, HashFiles& listCurrentHash)
 {
-	/*std::string block;
+	std::string block;
 	std::string hash;
-	for (auto file : listFile)
+	for (auto file : filelist)
 	{
 		block = readBlockInFile(file);
 		hash = getHash(block);
 		checkHashInList(hash, file, listCurrentHash);
-	}*/
+	}
 }
 
 //„мстим список от лишних уникальных файлов
@@ -131,56 +128,63 @@ bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
 	return true;
 }
 
-void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner) 
+void DuplicateSearcher::readFileInfo(std::vector <bf::path>& filelist)
 {
-	//static int s = 0;
-	std::unordered_map<std::string, std::vector<bf::path>> temp;
-	findConcurrence(conteiner, temp);
-	removeUniqHash(temp);
-	
-	if (isEnd(temp)) 
+	for (const auto& file : filelist)
 	{
-		for (auto h : temp) 
-		{
-			_listDuplicate.push_back( h.second );
-		}
-	}
-	else  
-	{	
-		_currentPos += _blockSize;
-		for (auto it : temp) 
-		{
-			//std::cout << ++s << std::endl;
-			searchDuplicate(it.second);
-			//std::cout << --s << std::endl;
-		}
-		_currentPos -= _blockSize;
+		FileInfo info(file);
+		info.fileData = _reader->readFile(file);
+		_filesData.push_back(std::move(info));
 	}
 }
+//void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner) 
+//{
+//	std::unordered_map<std::string, std::vector<bf::path>> temp;
+//	findConcurrence(conteiner, temp);
+//	removeUniqHash(temp);
+//	
+//	if (isEnd(temp)) 
+//	{
+//		for (auto h : temp) 
+//		{
+//			_listDuplicate.push_back( h.second );
+//		}
+//	}
+//	else  
+//	{	
+//		_currentPos += _reader->getBlockSize();
+//		for (auto it : temp) 
+//		{
+//			searchDuplicate(it.second);
+//		}
+//		_currentPos -= _reader->getBlockSize();
+//	}
+//}
+
+
+void DuplicateSearcher::searchDuplicate(std::vector <bf::path>& fileList)
+{
+	readFileInfo(fileList);
+}
+
+
 
 
 void DuplicateSearcher::print(HashFiles& listCurrentHash)
 {
-	for (auto const& [key, value] : listCurrentHash)
+	for (auto const& [hash, filelist] : listCurrentHash)
 	{
-		std::cout << "start temp" << std::endl;
-		for (auto i = value.begin(); i != value.end(); ++i) 
-		{
-			std::cout << *i << std::endl;
-		}
-		std::cout << "end temp" << std::endl;
+		std::cout << "Matches the hash: " << hash << std::endl;
+		std::for_each(filelist.rbegin(), filelist.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
+		std::cout <<  std::endl;
 	}
 }
-void DuplicateSearcher::print(std::vector<std::vector<bf::path>>& listDuplicate)
+void DuplicateSearcher::print()
 {
-	for (auto const& files : listDuplicate)
+	for (auto const& filelist : _listDuplicate)
 	{
-		std::cout << "start list" << std::endl;
-		for (auto file = files.begin(); file != files.end(); ++file)
-		{
-			std::cout << *file << std::endl;
-		}
-		std::cout << "end list" << std::endl;
+		std::for_each(filelist.rbegin(), filelist.rend(), [](const bf::path& file) { std::cout << file << std::endl; });
+		std::cout << std::endl;
 	}
 }
 

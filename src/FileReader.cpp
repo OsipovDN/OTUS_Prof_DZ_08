@@ -10,7 +10,7 @@ unsigned long long FileReader::checkSizeBlock(std::ifstream& file)
 	return  remains;
 }
 
-Data FileReader::readFile(bf::path& path)
+Data FileReader::readFile(const bf::path& path)
 {
 	Data tempData;
 	std::ifstream file;
