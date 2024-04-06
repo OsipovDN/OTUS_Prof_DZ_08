@@ -53,7 +53,7 @@ enum class Hash {
 	NONE
 };
 
-using HashFiles = std::unordered_map<std::string, std::vector<FileInfo>>;
+using HashNode= std::unordered_map<std::string, std::vector<FileInfo>>;
 
 class DuplicateSearcher {
 private:
@@ -75,29 +75,24 @@ private:
 		\return Hash - hash.
 	*/
 	Hash hashType(std::string& type) noexcept;
-	/*! The method checks the block size to match the one specified by the user.
-		\param file - the file in which the check is performed.
-		\return unsigned long long - block size.
-	*/
-	unsigned long long checkSizeBlock(std::ifstream& file);
 
 	/*! The method checks for the presence of this hash in the general list. If such a hash occurs, the file is added to the general list.
 		\param hash - the hash you are looking for.
 		\param file - tthe file that this hash belongs to.
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void checkHashInList(std::string& hash, FileInfo& file, HashFiles& listCurrentHash);
+	void checkHashInList(std::string& hash, FileInfo& file, HashNode& listCurrentHash);
 
 	/*! This method removes unique hashes from the list of current ones
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void removeUniqHash(HashFiles& listCurrentHash);
+	void removeUniqHash(HashNode& listCurrentHash);
 	/*! The method checks for the end of the file. If the current position of the block being
 	checked exceeds the file size, the file is excluded from further comparison.
 		\param listCurrentHash - List of all hashes of the current block position.
 		\return bool - Indicates the end of the file.
 	*/
-	bool isEnd(HashFiles& listCurrentHashl);
+	bool isEnd(HashNode& listCurrentHashl);
 
 	void readFileInfo(std::vector <bf::path>& fileList);
 
@@ -123,7 +118,7 @@ public:
 	/*!The method outputs all files according to the current hash
 		\param listCurrentHash - List of all hashes of the current block position
 	*/
-	void print(HashFiles& listCurrentHashl);
+	void print(HashNode& listCurrentHashl);
 	/*!The method outputs grouped lists of duplicate files
 	*/
 	void print();

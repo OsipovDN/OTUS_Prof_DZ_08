@@ -59,12 +59,13 @@ void FileScaner::scanDirectories(std::vector<bf::path>& inclDirs, const std::vec
 {
 	_includeDirs = inclDirs;
 	_excludedDirs = exclDirs;
-	for (const auto& dir : inclDirs)
+	for (const auto& dir : _includeDirs)
 	{
 		_parseLevelDir = 0;
 		getFileFromDir(dir);
+		startScanning();
 	}
-	startScanning();
+	
 }
 
 ///@}

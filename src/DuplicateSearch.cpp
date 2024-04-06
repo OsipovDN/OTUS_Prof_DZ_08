@@ -37,17 +37,8 @@ Hash DuplicateSearcher::hashType(std::string& type) noexcept
 	else
 		return Hash::NONE;
 }
-unsigned long long DuplicateSearcher::checkSizeBlock(std::ifstream& file)
-{
-	file.seekg(_currentPos, std::ios_base::beg);
-	unsigned long long start = file.tellg();
-	file.seekg(0, std::ios_base::end);
-	unsigned long long end = file.tellg();
-	auto remains = end - start;
-	return  remains;
-}
 
-void DuplicateSearcher::checkHashInList(std::string& hash, FileInfo& file, HashFiles& listCurrentHash)
+void DuplicateSearcher::checkHashInList(std::string& hash, FileInfo& file, HashNode& listCurrentHash)
 {
 	if (listCurrentHash.find(hash) != listCurrentHash.end())
 		listCurrentHash[hash].push_back(file);
@@ -55,10 +46,8 @@ void DuplicateSearcher::checkHashInList(std::string& hash, FileInfo& file, HashF
 		listCurrentHash.insert(std::pair(hash, std::vector{ file }));
 }
 
-
-
 //Чмстим список от лишних уникальных файлов
-void DuplicateSearcher::removeUniqHash(HashFiles& listCurrentHash)
+void DuplicateSearcher::removeUniqHash(HashNode& listCurrentHash)
 {
 	for (auto it = listCurrentHash.begin(); it != listCurrentHash.end();)
 	{
@@ -69,19 +58,20 @@ void DuplicateSearcher::removeUniqHash(HashFiles& listCurrentHash)
 	}
 }
 
-bool DuplicateSearcher::isEnd(HashFiles& listCurrentHashl)
+bool DuplicateSearcher::isEnd(HashNode& listCurrentHashl)
 {
+	bool flag = true;
 	for (auto const& [hash, files] : listCurrentHashl)
 	{
 		for (auto file = files.begin(); file != files.end(); ++file)
 		{
-			if (static_cast<unsigned long long>(_currentPos) <=(*file).fileData.size())
+			if (static_cast<unsigned long long>(_currentPos) <= (*file).fileData.size())
 			{
-				return false;
+				flag = false;
 			}
 		}
 	}
-	return true;
+	return flag;
 }
 
 void DuplicateSearcher::readFileInfo(std::vector <bf::path>& filelist)
@@ -95,52 +85,38 @@ void DuplicateSearcher::readFileInfo(std::vector <bf::path>& filelist)
 		_filesData.push_back(std::move(info));
 	}
 }
-//void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner) 
-//{
-//	std::unordered_map<std::string, std::vector<bf::path>> temp;
-//	findConcurrence(conteiner, temp);
-//	removeUniqHash(temp);
-//	
-//	if (isEnd(temp)) 
-//	{
-//		for (auto h : temp) 
-//		{
-//			_listDuplicate.push_back( h.second );
-//		}
-//	}
-//	else  
-//	{	
-//		_currentPos += _reader->getBlockSize();
-//		for (auto it : temp) 
-//		{
-//			searchDuplicate(it.second);
-//		}
-//		_currentPos -= _reader->getBlockSize();
-//	}
-//}
-
 
 void DuplicateSearcher::searchDuplicate(std::vector <bf::path>& fileList)
 {
-	HashFiles tempNode;
+	HashNode tempNode;
 
 	readFileInfo(fileList);
 	/*std::sort(_filesData.cbegin(), _filesData.cend(),
 		[](const FileInfo& lft, const FileInfo& rht) { return lft.fileData <= rht.fileData; });*/
 	_currentPos = 0;
 
-	for (auto& info : _filesData)
+	for (auto info = _filesData.begin(); info != _filesData.end(); ++info)
 	{
-		//Тут делаем проверку на выход из размера 
-		std::string blockToCompare = info.fileData[_currentPos];
-		tempNode.insert(std::pair<std::string, std::vector<FileInfo>>(blockToCompare, std::vector{ info }));
+		std::string blockToCompare = info->fileData[_currentPos];
+		//tempNode.insert(std::pair<std::string, std::vector<FileInfo>>(blockToCompare, std::vector{ *info }));
 
-		for (auto it = _filesData.begin() + _currentPos; it != _filesData.end(); ++it)
+			//Тут делаем проверку на выход из размера 
+
+		std::vector<FileInfo>::iterator start = info;
+		for (auto it = start; it != _filesData.end(); ++it)
 		{
-			checkHashInList(it->fileData.at(_currentPos), *it, tempNode);
+			if (it->fileData.size() >= _currentPos)
+				checkHashInList(it->fileData.at(_currentPos), *it, tempNode);
 		}
 		//Удаляем уникальные файлы
 		removeUniqHash(tempNode);
+		if (isEnd(tempNode))
+		{
+			for (auto file : tempNode)
+			{
+				_listDuplicate.push_back(file.second);
+			}
+		}
 		//тут ноду tempNode нужно пристроить по назначению
 		_currentPos++;
 		if (isEnd(tempNode))
@@ -156,7 +132,7 @@ void DuplicateSearcher::searchDuplicate(std::vector <bf::path>& fileList)
 
 
 
-void DuplicateSearcher::print(HashFiles& listCurrentHash)
+void DuplicateSearcher::print(HashNode& listCurrentHash)
 {
 	for (auto const& [hash, filelist] : listCurrentHash)
 	{

@@ -18,7 +18,10 @@ private:
 	unsigned long long _blockSize;		///<block size for comparison
 	std::streampos _currentPos;		///<the current position of the block
 	char* _buf;							///<block
-
+	/*! The method checks the block size to match the one specified by the user.
+		\param file - the file in which the check is performed.
+		\return unsigned long long - block size.
+	*/
 	unsigned long long checkSizeBlock(std::ifstream& file);
 public:
 	FileReader(unsigned long long size) :
