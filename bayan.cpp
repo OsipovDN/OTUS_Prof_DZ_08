@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 		//Контейнер отфильтрованных файлов
 		std::vector < bf::path> fileList;
 		//Контейнер для дубликатов
-		std::vector <std::vector <bf::path>> duplicateFile;
+		std::vector <std::vector <FileInfo>> duplicateFile;
 
 		/*
 		Парсер проводит фильтрацию файлов по указанным пользователем параметрам
