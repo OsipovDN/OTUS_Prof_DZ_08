@@ -131,6 +131,7 @@ void DuplicateSearcher::searchDuplicate(std::vector <bf::path>& fileList)
 
 	for (auto& info : _filesData)
 	{
+		//Тут делаем проверку на выход из размера 
 		std::string blockToCompare = info.fileData[_currentPos];
 		tempNode.insert(std::pair<std::string, std::vector<FileInfo>>(blockToCompare, std::vector{ info }));
 
@@ -142,6 +143,13 @@ void DuplicateSearcher::searchDuplicate(std::vector <bf::path>& fileList)
 		removeUniqHash(tempNode);
 		//тут ноду tempNode нужно пристроить по назначению
 		_currentPos++;
+		if (isEnd(tempNode))
+		{
+			for (auto file : tempNode)
+			{
+				_listDuplicate.push_back(file.second);
+			}
+		}
 		print(tempNode);
 	}
 }
