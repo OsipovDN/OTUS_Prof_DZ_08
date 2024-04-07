@@ -1,4 +1,4 @@
-﻿#include "FileScaner.h"﻿
+﻿#include "FileScaner.h"
 /*! \FileScaner
 	\brief source file
 
