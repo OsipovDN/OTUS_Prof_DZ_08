@@ -21,7 +21,6 @@ std::string DuplicateSearcher::getHash(std::string& block)
 		break;
 	case Hash::MD5:
 		hash_transf = md5(block);
-
 		break;
 	case Hash::NONE:
 		break;
