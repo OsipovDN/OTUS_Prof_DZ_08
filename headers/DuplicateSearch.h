@@ -43,7 +43,8 @@ private:
 	char* _buf;		//block
 	Hash _hash;		//type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
-	std::stack <std::unordered_map<std::string, std::vector<bf::path>>> _stack;
+	std::stack <HashFiles> _stack;
+	HashFiles _currentBlock;
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -66,30 +67,28 @@ private:
 	*/
 	std::string readBlockInFile(bf::path& path);
 
-	//void scanBlock(std::vector<bf::path>& list_path);
-
 	/*! The method checks for the presence of this hash in the general list. If such a hash occurs, the file is added to the general list.
 		\param hash - the hash you are looking for.
 		\param file - tthe file that this hash belongs to.
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void checkHashInList(std::string& hash, bf::path& file, HashFiles& listCurrentHash);
+	void checkHashInList(std::string& hash, bf::path& file);
 	/*! This method reads a block of the current file from
 		a given position and compares it with the available blocks in the current hash list.
 		\param listFile -The file list being checked.
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void findConcurrence(std::vector<bf::path>& listFile, HashFiles& listCurrentHashl);
+	void findConcurrence(std::vector<bf::path>& listFile);
 	/*! This method removes unique hashes from the list of current ones
 		\param listCurrentHash - List of all hashes of the current block position.
 	*/
-	void removeUniqHash(HashFiles& listCurrentHash);
+	void removeUniqHash();
 	/*! The method checks for the end of the file. If the current position of the block being
 	checked exceeds the file size, the file is excluded from further comparison.
 		\param listCurrentHash - List of all hashes of the current block position.
 		\return bool - Indicates the end of the file.
 	*/
-	bool isEnd(HashFiles& listCurrentHashl);
+	bool isEnd();
 
 public:
 	/*!Constructor of a class for forming an object.
@@ -105,7 +104,7 @@ public:
 	/*!the method searches for duplicate files in the specified list of files.
 		\param listPath - list of files to search for duplicates.
 	*/
-	void searchDuplicate(std::vector<bf::path> listPath);
+	void searchDuplicate(std::vector<bf::path> &listPath);
 
 
 	
