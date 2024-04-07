@@ -9,6 +9,7 @@
 #include <fstream>
 #include <memory>
 #include <unordered_map>
+#include <stack>
 #include <tuple>
 #include <string>
 #include <algorithm>
@@ -42,6 +43,7 @@ private:
 	char* _buf;		//block
 	Hash _hash;		//type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
+	std::stack <std::unordered_map<std::string, std::vector<bf::path>>> _stack;
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.

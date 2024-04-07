@@ -147,6 +147,7 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path> conteiner)
 	else  
 	{	
 		_currentPos += _blockSize;
+		_stack.push(std::move(temp));
 		for (auto it : temp) 
 		{
 			//std::cout << ++s << std::endl;
