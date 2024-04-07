@@ -13,7 +13,6 @@
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
 
-
 void printListDuplicate(std::vector <std::vector <bf::path>>& listDuplicate) {
 	for (const auto& list : listDuplicate) {
 		for (const auto& file: list) {
@@ -30,7 +29,6 @@ void printFileList(std::vector < bf::path> list)
 
 int main(int argc, char* argv[])
 {
-
 	po::options_description desc("Options");
 	desc.add_options()
 		("help,h", "produce help")

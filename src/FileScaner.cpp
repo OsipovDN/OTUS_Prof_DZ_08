@@ -1,15 +1,11 @@
-﻿﻿/*! \FileScaner
+﻿#include "FileScaner.h"﻿
+/*! \FileScaner
 	\brief source file
 
 	Implementation FileScaner.
 */
 
 ///@{
-#include "FileScaner.h"
-namespace bf = boost::filesystem;
-namespace ba = boost::adaptors;
-
-
 FileScaner::FileScaner(int depth, unsigned long long minFileSize, std::string mask) :
 	_depth(depth),
 	_minFileSize(minFileSize),
