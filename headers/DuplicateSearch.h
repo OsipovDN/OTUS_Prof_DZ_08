@@ -25,7 +25,7 @@
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
-using HashFiles=std::unordered_map<std::string, std::vector<bf::path>>;
+using HashNode=std::unordered_map<std::string, std::vector<bf::path>>;
 
 class DuplicateSearcher {
 private:
@@ -43,8 +43,8 @@ private:
 	char* _buf;		//block
 	Hash _hash;		//type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
-	std::stack <HashFiles> _stack;
-	HashFiles _currentBlock;
+	std::stack <HashNode> _stack;
+	HashNode _currentBlock;
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -105,13 +105,13 @@ public:
 		\param listPath - list of files to search for duplicates.
 	*/
 	void searchDuplicate(std::vector<bf::path> &listPath);
-
-
-	
-	//Вывод на печать списка hash'ей текущего читаемого блока
-	void print(HashFiles& listCurrentHashl);
-	//Вывод на печать списка дубликатов (вспомогательные функции)
-	void print(std::vector<std::vector<bf::path>>& listDuplicate);
+	/*!The method outputs all files according to the current hash
+		\param listCurrentHash - List of all hashes of the current block position
+	*/
+	void print(HashNode& listCurrentHashl);
+	/*!The method outputs grouped lists of duplicate files
+	*/
+	void print();
 	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }
 	
 };

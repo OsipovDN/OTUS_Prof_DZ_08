@@ -150,28 +150,21 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
 }
 
 
-void DuplicateSearcher::print(HashFiles& listCurrentHash)
+void DuplicateSearcher::print(HashNode& listCurrentHash)
 {
-	for (auto const& [key, value] : listCurrentHash)
+	for (auto const& [hash, filelist] : listCurrentHash)
 	{
-		std::cout << "start temp" << std::endl;
-		for (auto i = value.begin(); i != value.end(); ++i)
-		{
-			std::cout << *i << std::endl;
-		}
-		std::cout << "end temp" << std::endl;
+		std::cout << "Matches the hash: " << hash << std::endl;
+		std::for_each(filelist.rbegin(), filelist.rend(), [](const bf::path& file) { std::cout << file.filename().string() << std::endl; });
+		std::cout << std::endl;
 	}
 }
-void DuplicateSearcher::print(std::vector<std::vector<bf::path>>& listDuplicate)
+void DuplicateSearcher::print()
 {
-	for (auto const& files : listDuplicate)
+	for (auto const& filelist : _listDuplicate)
 	{
-		std::cout << "start list" << std::endl;
-		for (auto file = files.begin(); file != files.end(); ++file)
-		{
-			std::cout << *file << std::endl;
-		}
-		std::cout << "end list" << std::endl;
+		std::for_each(filelist.rbegin(), filelist.rend(), [](const bf::path& file) { std::cout << file.filename().string() << std::endl; });
+		std::cout << std::endl;
 	}
 }
 
