@@ -1,11 +1,12 @@
-﻿#include "FileScaner.h"
-/*! \FileScaner
+﻿/*! \FileScaner
 	\brief source file
 
 	Implementation FileScaner.
 */
 
 ///@{
+#include "FileScaner.h"
+
 FileScaner::FileScaner(int depth, unsigned long long minFileSize, std::string mask) :
 	_depth(depth),
 	_minFileSize(minFileSize),
@@ -63,7 +64,7 @@ void FileScaner::scanDirectories(std::vector<bf::path>& inclDirs, const std::vec
 	}
 }
 
-///@}
+
 
 
 

@@ -1,3 +1,10 @@
+/*! \DuplicateSearch
+	\brief source file
+
+	Implementation DuplicateSearch.
+*/
+
+///@{
 #include "DuplicateSearch.h"
 
 DuplicateSearcher::DuplicateSearcher(unsigned long long blockSize, std::string& hash) :_blockSize(blockSize)
@@ -29,7 +36,7 @@ std::string DuplicateSearcher::getHash(std::string& block)
 	}
 	return hash_transf;
 }
-DuplicateSearcher::Hash DuplicateSearcher::hashType(std::string& type) noexcept
+Hash DuplicateSearcher::hashType(std::string& type) noexcept
 {
 	if (type == "MD5")
 		return Hash::MD5;
@@ -80,7 +87,6 @@ void DuplicateSearcher::checkHashInList(std::string& hash, bf::path& file)
 
 }
 
-//»щем совпадени€ в списке по одному блоку
 void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile)
 {
 	std::string block;
@@ -93,7 +99,6 @@ void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile)
 	}
 }
 
-//„мстим список от лишних уникальных файлов
 void DuplicateSearcher::removeUniqHash()
 {
 	for (auto it = _currentBlock.begin(); it != _currentBlock.end();)
@@ -123,7 +128,7 @@ bool DuplicateSearcher::isEnd()
 void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
 {
 	_currentBlock.clear();
-	static int s = 0;
+	static int recursionDepth = 0;
 	findConcurrence(conteiner);
 	removeUniqHash();
 	if (isEnd())
@@ -139,15 +144,14 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
 		_stack.push(_currentBlock);
 		for (auto it : _stack.top())
 		{
-			std::cout << ++s << std::endl;
+			std::cout << ++recursionDepth << std::endl;
 			searchDuplicate(it.second);
-			std::cout << --s << std::endl;
+			std::cout << --recursionDepth << std::endl;
 		}
 		_stack.pop();
 		_currentPos -= _blockSize;
 	}
 }
-
 
 void DuplicateSearcher::print(HashNode& listCurrentHash)
 {
@@ -166,4 +170,5 @@ void DuplicateSearcher::print()
 		std::cout << std::endl;
 	}
 }
+///@}
 

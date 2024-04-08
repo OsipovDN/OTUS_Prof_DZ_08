@@ -27,24 +27,26 @@
 namespace bf = boost::filesystem;
 using HashNode=std::unordered_map<std::string, std::vector<bf::path>>;
 
-class DuplicateSearcher {
-private:
-	/*! \brief EnumClass "Hash".
+/*! \brief EnumClass "Hash".
 
 	The EnumClass types of hash functions.
 	*/
-	enum class Hash {
-		CRC32,
-		MD5,
-		NONE
-	};
-	unsigned long long _blockSize;		//block size for comparison
-	std::streampos _currentPos = 0;		//the current position of the block
-	char* _buf;		//block
-	Hash _hash;		//type of hash function
-	std::vector <std::vector <bf::path>> _listDuplicate;		//list of duplicate files;
-	std::stack <HashNode> _stack;
-	HashNode _currentBlock;
+enum class Hash {
+	CRC32,
+	MD5,
+	NONE
+};
+
+class DuplicateSearcher {
+private:
+	
+	unsigned long long _blockSize;		///<block size for comparison
+	std::streampos _currentPos = 0;		///<the current position of the block
+	char* _buf;							///<block
+	Hash _hash;							///<type of hash function
+	std::vector <std::vector <bf::path>> _listDuplicate;		///<list of duplicate files;
+	std::stack <HashNode> _stack;		///<Stack for traversing the block tree
+	HashNode _currentBlock;				///<A list of files corresponding to the current block
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -53,7 +55,7 @@ private:
 	std::string getHash(std::string& block);
 	/*! The method Determines the type of hash function selected by the user.
 		\param type - user-defined type.
-		\return Hash - hash.
+		\return Hash - hash type.
 	*/
 	Hash hashType(std::string& type) noexcept;
 	/*! The method checks the block size to match the one specified by the user.
@@ -70,22 +72,19 @@ private:
 	/*! The method checks for the presence of this hash in the general list. If such a hash occurs, the file is added to the general list.
 		\param hash - the hash you are looking for.
 		\param file - tthe file that this hash belongs to.
-		\param listCurrentHash - List of all hashes of the current block position.
 	*/
 	void checkHashInList(std::string& hash, bf::path& file);
 	/*! This method reads a block of the current file from
 		a given position and compares it with the available blocks in the current hash list.
 		\param listFile -The file list being checked.
-		\param listCurrentHash - List of all hashes of the current block position.
 	*/
 	void findConcurrence(std::vector<bf::path>& listFile);
-	/*! This method removes unique hashes from the list of current ones
-		\param listCurrentHash - List of all hashes of the current block position.
+	/*! 
+		This method removes unique hashes from the list of current ones
 	*/
 	void removeUniqHash();
 	/*! The method checks for the end of the file. If the current position of the block being
 	checked exceeds the file size, the file is excluded from further comparison.
-		\param listCurrentHash - List of all hashes of the current block position.
 		\return bool - Indicates the end of the file.
 	*/
 	bool isEnd();
@@ -109,7 +108,8 @@ public:
 		\param listCurrentHash - List of all hashes of the current block position
 	*/
 	void print(HashNode& listCurrentHashl);
-	/*!The method outputs grouped lists of duplicate files
+	/*
+		!The method outputs grouped lists of duplicate files
 	*/
 	void print();
 	std::vector <std::vector <bf::path>> getList() { return _listDuplicate; }

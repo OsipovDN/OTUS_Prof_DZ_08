@@ -87,7 +87,6 @@ int main(int argc, char* argv[])
 		hash = vm["hash_type"].as<std::string>();
 		std::cout << "Hash func is: " << hash << std::endl;
 
-
 		//Контейнер отфильтрованных файлов
 		std::vector < bf::path> fileList;
 		//Контейнер для дубликатов
