@@ -62,29 +62,31 @@ std::string DuplicateSearcher::readBlockInFile(bf::path& path)
 	if (!file.is_open())
 	{
 		std::cout << "File is not open!" << std::endl;
+		return std::string{};
 	}
-
-	auto count_byte = checkSizeBlock(file);
-	if (count_byte < _blockSize || count_byte == 0)
+	else
 	{
-		for (auto i = count_byte; i != _blockSize; ++i)
-			_buf[i] = '\0';
-	}
+		auto count_byte = checkSizeBlock(file);
+		/*if (count_byte < _blockSize || count_byte == 0)
+		{
+			for (auto i = count_byte; i != _blockSize; ++i)
+				_buf[i] = '\0';
+		}*/
+		memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
 
-	file.seekg(_currentPos, std::ios_base::beg);
-	file.read(_buf, _blockSize);
-	file.close();
-	return std::string{ _buf };
+		file.seekg(_currentPos, std::ios_base::beg);
+		file.read(_buf, _blockSize);
+		file.close();
+		return std::string{ _buf };
+	}
 }
 
 void DuplicateSearcher::checkHashInList(std::string& hash, bf::path& file)
 {
-
 	if (_currentBlock.find(hash) != _currentBlock.end())
 		_currentBlock[hash].push_back(file);
 	else
 		_currentBlock.insert(std::pair(hash, std::vector{ file }));
-
 }
 
 void DuplicateSearcher::findConcurrence(std::vector<bf::path>& listFile)
