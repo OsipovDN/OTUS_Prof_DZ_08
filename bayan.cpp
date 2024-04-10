@@ -1,22 +1,17 @@
-﻿#include "FileParser.h"
-#include "DuplicateSearch.h"
-
-
-
-//STL
+﻿//STL
 #include <iostream>
 #include <vector>
-
-
 //BOOST
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/program_options.hpp> 
 #include <boost/regex.hpp>
 
+#include "FileScaner.h"
+#include "DuplicateSearch.h"
+
 namespace bf = boost::filesystem;
 namespace po = boost::program_options;
-
 
 void printListDuplicate(std::vector <std::vector <bf::path>>& listDuplicate) {
 	for (const auto& list : listDuplicate) {
@@ -34,7 +29,6 @@ void printFileList(std::vector < bf::path> list)
 
 int main(int argc, char* argv[])
 {
-
 	po::options_description desc("Options");
 	desc.add_options()
 		("help,h", "produce help")
@@ -57,10 +51,10 @@ int main(int argc, char* argv[])
 		std::vector<bf::path> incl;
 		std::vector<bf::path> excl;
 		int lvl;
-		unsigned long long size;
+		unsigned long long fileSize;
 		std::string mask;
 
-		long long block_size;
+		long long blockSize;
 		std::string hash;
 		if (vm.count("include")) {
 			std::cout << "include dir: " << std::endl;
@@ -81,18 +75,17 @@ int main(int argc, char* argv[])
 		lvl = vm["level"].as<int>();
 		std::cout << "Min dir level to search: " << lvl << std::endl;
 
-		size = vm["Min_file_size"].as<unsigned long long>();
-		std::cout << "Min file size to search: " << size << std::endl;
+		fileSize = vm["Min_file_size"].as<unsigned long long>();
+		std::cout << "Min file size to search: " << fileSize << std::endl;
 
 		mask = vm["file_mask"].as<std::string>();
 		std::cout << "Mask for path: " << mask << std::endl;
 
-		block_size = vm["Block_size"].as<unsigned long long>();
-		std::cout << "Block_size is: " << block_size << std::endl;
+		blockSize = vm["Block_size"].as<unsigned long long>();
+		std::cout << "Block_size is: " << blockSize << std::endl;
 
 		hash = vm["hash_type"].as<std::string>();
 		std::cout << "Hash func is: " << hash << std::endl;
-
 
 		//Контейнер отфильтрованных файлов
 		std::vector < bf::path> fileList;
@@ -105,21 +98,15 @@ int main(int argc, char* argv[])
 		- по размеру файлов
 		- по маске файлов
 		*/
-		FileParser parser(lvl, size, mask);
-
+		FileScaner parser(lvl, fileSize, mask);
+		//Фильтруем директории по глубине сканирования и исключая ненужные
+		parser.scanDirectories(incl, excl);
 		/*
 		Поисковик ищет дубликаты файлов с использованием пользовательских параметров
 		- размер сканиремых блоков в файле
 		- hash функция для алгоритма сравнения
 		*/
-		DuplicateSearcher searcher(block_size, hash);
-
-		//Фильтруем директории по глубине сканирования и исключая ненужные
-		fileList = parser.ScanDirectories(incl, excl);
-
-		//Фильтруем по маске названия файла и по размеру файла 
-		std::vector < bf::path> filterfileList;
-		filterfileList =parser.FilterListFile(fileList);
+		fileList = parser.getFiles();
 		/*
 		На данной итерации мы получаем полный список всех фалов в просканированных дирректориях отвечающих
 		параметрам заданным пользователем
@@ -127,7 +114,12 @@ int main(int argc, char* argv[])
 		//printFileList(filterfileList);
 		
 		//Ищем дубликаты
+		DuplicateSearcher searcher(blockSize, hash);
 		searcher.searchDuplicate(fileList);
+		if (blockSize <= 10)
+		{
+			std::cout << "The scan is running. Please wait ..." << std::endl;
+		}
 		duplicateFile = searcher.getList();
 		//Вывод в консоль
 		printListDuplicate(duplicateFile);
