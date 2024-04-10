@@ -116,6 +116,10 @@ int main(int argc, char* argv[])
 		//Ищем дубликаты
 		DuplicateSearcher searcher(blockSize, hash);
 		searcher.searchDuplicate(fileList);
+		if (blockSize <= 10)
+		{
+			std::cout << "The scan is running. Please wait ..." << std::endl;
+		}
 		duplicateFile = searcher.getList();
 		//Вывод в консоль
 		printListDuplicate(duplicateFile);

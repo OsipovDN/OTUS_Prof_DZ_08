@@ -25,7 +25,9 @@
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
+///<Node -пара позиции блока и соответствующих данной позиции хэшей и списков файлов соответствующих этим хешам 
 using Node = std::pair<unsigned long long, std::pair<std::string, std::vector<bf::path>>>;
+///<HashMap- контейнер содержащий значения хэшей и списки файлов им соответствующие
 using HashMap=std::unordered_map<std::string, std::vector<bf::path>>;
 
 /*! \brief EnumClass "Hash".
@@ -41,13 +43,13 @@ enum class Hash {
 class DuplicateSearcher {
 private:
 	
-	unsigned long long _blockSize;		///<block size for comparison
+	unsigned long long _blockSize;			///<block size for comparison
 	unsigned long long _currentPos = 0;		///<the current position of the block
-	char* _buf;							///<block
-	Hash _hash;							///<type of hash function
+	char* _buf;								///<block
+	Hash _hash;								///<type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		///<list of duplicate files;
-	std::stack <Node> _stack;		///<Stack for traversing the block tree
-	HashMap _currentBlock;				///<A list of files corresponding to the current block
+	std::stack <Node> _stack;				///<Stack for traversing the block tree
+	HashMap _currentBlock;					///<A list of files corresponding to the current block
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -95,6 +97,9 @@ public:
 		frees up the memory allocated for the block being compared
 	*/
 	~DuplicateSearcher();
+	/*! 
+	The method writes nodes of the current processed position of the read block to the stack.
+	*/
 	void pushInStack();
 	/*!the method searches for duplicate files in the specified list of files.
 		\param listPath - list of files to search for duplicates.
