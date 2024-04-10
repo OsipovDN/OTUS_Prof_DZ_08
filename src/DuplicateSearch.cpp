@@ -24,10 +24,10 @@ std::string DuplicateSearcher::getHash(std::string& block)
 	switch (_hash)
 	{
 	case Hash::CRC32:
-		hash_transf = CRC32_function((unsigned char*)block.c_str(), _blockSize);
+		hash_transf = getCrc32((const char*)block.c_str(), _blockSize);
 		break;
 	case Hash::MD5:
-		hash_transf = md5(block);
+		hash_transf = getMD5((const char*)block.c_str(), _blockSize);
 		break;
 	case Hash::NONE:
 		break;
@@ -113,34 +113,6 @@ bool DuplicateSearcher::isEnd()
 	}
 	return true;
 }
-
-//void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
-//{
-//	_currentBlock.clear();
-//	static int recursionDepth = 0;
-//	findConcurrence(conteiner);
-//	removeUniqHash();
-//	if (isEnd())
-//	{
-//		for (auto h : _currentBlock)
-//		{
-//			_listDuplicate.push_back(h.second);
-//		}
-//	}
-//	else
-//	{
-//		_currentPos += _blockSize;
-//		_stack.push(_currentBlock);
-//		for (auto it : _stack.top())
-//		{
-//			std::cout << ++recursionDepth << std::endl;
-//			searchDuplicate(it.second);
-//			std::cout << --recursionDepth << std::endl;
-//		}
-//		_stack.pop();
-//		_currentPos -= _blockSize;
-//	}
-//}
 
 void DuplicateSearcher::pushInStack()
 {

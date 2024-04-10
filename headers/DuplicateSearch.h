@@ -13,11 +13,12 @@
 #include <tuple>
 #include <string>
 #include <algorithm>
+#include <iostream>
 //Boost
 #include <boost/filesystem.hpp>
-//Hash
-#include "md5.h"
-#include "crc32.h"
+#include <boost/crc.hpp>
+#include <boost/uuid/detail/md5.hpp>
+#include <boost/algorithm/hex.hpp>
 
 /*! \brief Class "DuplicateSearcher".
 
@@ -50,6 +51,25 @@ private:
 	std::vector <std::vector <bf::path>> _listDuplicate;		///<list of duplicate files;
 	std::stack <Node> _stack;				///<Stack for traversing the block tree
 	HashMap _currentBlock;					///<A list of files corresponding to the current block
+
+	std::string getCrc32(const char* buf, size_t buf_size)
+	{
+		boost::crc_32_type crc_hash;
+		crc_hash.process_bytes(buf, buf_size);
+		return std::to_string(crc_hash.checksum());
+	};
+
+	std::string getMD5(const char* buf, size_t buf_size)
+	{
+		boost::uuids::detail::md5 md5_hash;
+		md5_hash.process_bytes(buf, buf_size);
+		boost::uuids::detail::md5::digest_type digest;
+		md5_hash.get_digest(digest);
+		const auto intDigest = reinterpret_cast<const int*>(&digest);
+		std::string result;
+		boost::algorithm::hex(intDigest, intDigest + (sizeof(boost::uuids::detail::md5::digest_type) / sizeof(int)), std::back_inserter(result));
+		return result;
+	};
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
