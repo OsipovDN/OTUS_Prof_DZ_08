@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		("exclude,e", po::value<std::vector<bf::path>>()->multitoken(), "Exclude directories from scanning")
 		("level,l", po::value<int>()->default_value(0), "One for all directories, 0 - only the specified directory without nested")
 		("Min_file_size,s", po::value<unsigned long long>()->default_value(1), "By default, all files larger than 1 byte are checked")
-		("file_mask,m", po::value<std::string>()->default_value("(\\w+)(\\d+).(\\w+)(\\d+)"), "File mask") //(\\w+)(\\d+).(\\w+)(\\d+)
+		("file_mask,m", po::value<std::string>()->default_value("([a-zA-Z0-9]+).([a-zA-Z0-9]+)"), "File mask") //(\\w+)(\\d+).(\\w+)(\\d+)
 		("Block_size,S", po::value<unsigned long long>()->default_value(5), "The size of the block used to read files")
 		("hash_type,t", po::value<std::string>()->default_value("crc32"), "Hashing algorithm type: md5, crc32");
 
@@ -115,11 +115,11 @@ int main(int argc, char* argv[])
 		
 		//Ищем дубликаты
 		DuplicateSearcher searcher(blockSize, hash);
-		searcher.searchDuplicate(fileList);
 		if (blockSize <= 10)
 		{
 			std::cout << "The scan is running. Please wait ..." << std::endl;
 		}
+		searcher.searchDuplicate(fileList);
 		duplicateFile = searcher.getList();
 		//Вывод в консоль
 		printListDuplicate(duplicateFile);
