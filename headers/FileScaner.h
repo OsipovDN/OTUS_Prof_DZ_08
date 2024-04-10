@@ -27,7 +27,7 @@ private:
 	int _depth;								///<The depth of the passage of the dirrectory
 	unsigned long long _minFileSize;		///<Minimum size of scanned files
 	int _parseLevelDir;						///<Current directory level
-	std::unique_ptr<boost::regex> _mask;	///<File mask for scanning
+	boost::regex _mask;						///<File mask for scanning
 	std::vector <bf::path> _includeDirs;	///<Directories for scanning
 	std::vector <bf::path> _excludedDirs;	///<Execluded directories from scanning
 	std::vector <bf::path> _files;			///<result scanning

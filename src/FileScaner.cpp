@@ -10,9 +10,10 @@
 FileScaner::FileScaner(int depth, unsigned long long minFileSize, std::string mask) :
 	_depth(depth),
 	_minFileSize(minFileSize),
+	_mask(mask),
 	_parseLevelDir(0)
 {
-	_mask = std::make_unique<boost::regex>(mask);
+	
 }
 
 void FileScaner::getFileFromDir(const bf::path& includeDirs)
@@ -41,7 +42,7 @@ void FileScaner::startScanning()
 {
 	std::vector <bf::path> tempfileList;
 	auto FilterSize = [&](const bf::path& p)->bool {return file_size(p) > _minFileSize; };
-	auto FilterMask = [&](const bf::path& p)->bool {return !boost::regex_match(p.filename().string(), *_mask); };
+	auto FilterMask = [&](const bf::path& p)->bool {return !boost::regex_match(p.filename().string(), _mask); };
 
 	for (const auto& it : _files
 		| ba::filtered(FilterSize)
