@@ -25,7 +25,8 @@
 	with specified user-defined comparison parameters
 */
 namespace bf = boost::filesystem;
-using HashNode=std::unordered_map<std::string, std::vector<bf::path>>;
+using Node = std::pair<unsigned long long, std::pair<std::string, std::vector<bf::path>>>;
+using HashMap=std::unordered_map<std::string, std::vector<bf::path>>;
 
 /*! \brief EnumClass "Hash".
 
@@ -41,12 +42,12 @@ class DuplicateSearcher {
 private:
 	
 	unsigned long long _blockSize;		///<block size for comparison
-	std::streampos _currentPos = 0;		///<the current position of the block
+	unsigned long long _currentPos = 0;		///<the current position of the block
 	char* _buf;							///<block
 	Hash _hash;							///<type of hash function
 	std::vector <std::vector <bf::path>> _listDuplicate;		///<list of duplicate files;
-	std::stack <HashNode> _stack;		///<Stack for traversing the block tree
-	HashNode _currentBlock;				///<A list of files corresponding to the current block
+	std::stack <Node> _stack;		///<Stack for traversing the block tree
+	HashMap _currentBlock;				///<A list of files corresponding to the current block
 
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
@@ -58,11 +59,6 @@ private:
 		\return Hash - hash type.
 	*/
 	Hash hashType(std::string& type) noexcept;
-	/*! The method checks the block size to match the one specified by the user.
-		\param file - the file in which the check is performed.
-		\return unsigned long long - block size.
-	*/
-	unsigned long long checkSizeBlock(std::ifstream& file);
 	/*! The method reads a block from the specified file.
 		\param path - the file.
 		\return std::string - the read block.
@@ -99,7 +95,7 @@ public:
 		frees up the memory allocated for the block being compared
 	*/
 	~DuplicateSearcher();
-	
+	void pushInStack();
 	/*!the method searches for duplicate files in the specified list of files.
 		\param listPath - list of files to search for duplicates.
 	*/
@@ -107,7 +103,7 @@ public:
 	/*!The method outputs all files according to the current hash
 		\param listCurrentHash - List of all hashes of the current block position
 	*/
-	void print(HashNode& listCurrentHashl);
+	void print(HashMap& listCurrentHashl);
 	/*
 		!The method outputs grouped lists of duplicate files
 	*/
