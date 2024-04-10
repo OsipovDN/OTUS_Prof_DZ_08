@@ -10,7 +10,7 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(GTest)
 configure_file(version.h.in version.h)
 
-find_package (Boost 1.74 REQUIRED COMPONENTS program_options filesystem system)
+find_package (Boost 1.74 REQUIRED COMPONENTS program_options filesystem system regex)
 
 add_executable (
     bayan
