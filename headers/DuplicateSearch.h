@@ -13,11 +13,16 @@
 #include <tuple>
 #include <string>
 #include <algorithm>
+#include <iostream>
 //Boost
 #include <boost/filesystem.hpp>
-//Hash
+#include <boost/crc.hpp>
+#include <boost/uuid/detail/md5.hpp>
+#include <boost/algorithm/hex.hpp>
+
 #include "md5.h"
 #include "crc32.h"
+#include "sha1.h"
 
 /*! \brief Class "DuplicateSearcher".
 
@@ -37,6 +42,7 @@ using HashMap=std::unordered_map<std::string, std::vector<bf::path>>;
 enum class Hash {
 	CRC32,
 	MD5,
+	SHA1,
 	NONE
 };
 
@@ -51,6 +57,25 @@ private:
 	std::stack <Node> _stack;				///<Stack for traversing the block tree
 	HashMap _currentBlock;					///<A list of files corresponding to the current block
 
+	std::string getCrc32(const char* buf, size_t buf_size)
+	{
+		boost::crc_32_type crc_hash;
+		crc_hash.process_bytes(buf, buf_size);
+		return std::to_string(crc_hash.checksum());
+	};
+
+	std::string getMD5(const char* buf, size_t buf_size)
+	{
+		boost::uuids::detail::md5 md5_hash;
+		md5_hash.process_bytes(buf, buf_size);
+		boost::uuids::detail::md5::digest_type digest;
+		md5_hash.get_digest(digest);
+		const auto intDigest = reinterpret_cast<const int*>(&digest);
+		std::string result;
+		boost::algorithm::hex(intDigest, intDigest + (sizeof(boost::uuids::detail::md5::digest_type) / sizeof(int)), std::back_inserter(result));
+		return result;
+	};
+
 	/*! The method calculates the hash according to the hash function selected by the user.
 		\param block - the block where the hash is calculated.
 		\return std::string - hash.
@@ -61,6 +86,7 @@ private:
 		\return Hash - hash type.
 	*/
 	Hash hashType(std::string& type) noexcept;
+
 	/*! The method reads a block from the specified file.
 		\param path - the file.
 		\return std::string - the read block.

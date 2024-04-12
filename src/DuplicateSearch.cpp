@@ -24,11 +24,23 @@ std::string DuplicateSearcher::getHash(std::string& block)
 	switch (_hash)
 	{
 	case Hash::CRC32:
-		hash_transf = CRC32_function((unsigned char*)block.c_str(), _blockSize);
+	{
+		CRC32 crc;
+		hash_transf = crc((const char*)block.c_str(), _blockSize);
 		break;
+	}
 	case Hash::MD5:
-		hash_transf = md5(block);
+	{
+		MD5 md;
+		hash_transf = md((const char*)block.c_str(), _blockSize);
 		break;
+	}
+	case Hash::SHA1:
+	{
+		SHA1 sha;
+		hash_transf = sha((const char*)block.c_str(), _blockSize);
+		break;
+	}
 	case Hash::NONE:
 		break;
 	default:
@@ -58,7 +70,9 @@ std::string DuplicateSearcher::readBlockInFile(bf::path& path)
 	else
 	{
 		std::streampos pos = _currentPos;
-		memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
+		//memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
+		memset(_buf, '\0', _blockSize);
+		//_buf[_blockSize - 1] = '\0';
 
 		file.seekg(pos, std::ios_base::beg);
 		file.read(_buf, _blockSize);
@@ -114,34 +128,6 @@ bool DuplicateSearcher::isEnd()
 	return true;
 }
 
-//void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
-//{
-//	_currentBlock.clear();
-//	static int recursionDepth = 0;
-//	findConcurrence(conteiner);
-//	removeUniqHash();
-//	if (isEnd())
-//	{
-//		for (auto h : _currentBlock)
-//		{
-//			_listDuplicate.push_back(h.second);
-//		}
-//	}
-//	else
-//	{
-//		_currentPos += _blockSize;
-//		_stack.push(_currentBlock);
-//		for (auto it : _stack.top())
-//		{
-//			std::cout << ++recursionDepth << std::endl;
-//			searchDuplicate(it.second);
-//			std::cout << --recursionDepth << std::endl;
-//		}
-//		_stack.pop();
-//		_currentPos -= _blockSize;
-//	}
-//}
-
 void DuplicateSearcher::pushInStack()
 {
 	std::for_each(_currentBlock.begin(), _currentBlock.end(), [this](std::pair < std::string, std::vector<bf::path>> n)
@@ -177,7 +163,8 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
 			{
 				_listDuplicate.push_back(h.second);
 			}
-			_stack.pop();
+			if (!_stack.empty())
+				_stack.pop();
 			_currentBlock.clear();
 		}
 	}

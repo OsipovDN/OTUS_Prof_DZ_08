@@ -10,14 +10,16 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(GTest)
 configure_file(version.h.in version.h)
 
-find_package (Boost 1.74 REQUIRED COMPONENTS program_options filesystem system regex)
+find_package (Boost 1.74 REQUIRED COMPONENTS program_options filesystem system regex )
 
 add_executable (
     bayan
     bayan.cpp
     src/FileScaner.cpp
     src/DuplicateSearch.cpp
-    Hash_func/md5.cpp
+    hashFunc/crc32
+    hashFunc/md5
+    hashFunc/sha1
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
@@ -38,7 +40,7 @@ target_include_directories(
 
 target_include_directories(
     bayan PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Hash_func
+    ${CMAKE_CURRENT_SOURCE_DIR}/hashFunc
 )
 
 target_include_directories(
