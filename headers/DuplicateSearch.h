@@ -20,6 +20,10 @@
 #include <boost/uuid/detail/md5.hpp>
 #include <boost/algorithm/hex.hpp>
 
+#include "md5.h"
+#include "crc32.h"
+#include "sha1.h"
+
 /*! \brief Class "DuplicateSearcher".
 
 	The class implements methods for searching for duplicate files in directories
@@ -38,6 +42,7 @@ using HashMap=std::unordered_map<std::string, std::vector<bf::path>>;
 enum class Hash {
 	CRC32,
 	MD5,
+	SHA1,
 	NONE
 };
 
@@ -81,6 +86,7 @@ private:
 		\return Hash - hash type.
 	*/
 	Hash hashType(std::string& type) noexcept;
+
 	/*! The method reads a block from the specified file.
 		\param path - the file.
 		\return std::string - the read block.

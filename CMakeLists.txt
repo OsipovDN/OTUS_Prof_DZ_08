@@ -17,6 +17,9 @@ add_executable (
     bayan.cpp
     src/FileScaner.cpp
     src/DuplicateSearch.cpp
+    hashFunc/crc32
+    hashFunc/md5
+    hashFunc/sha1
 )
 add_executable(bayan_gtest test/bayan_gtest.cpp)
 
@@ -37,7 +40,7 @@ target_include_directories(
 
 target_include_directories(
     bayan PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Hash_func
+    ${CMAKE_CURRENT_SOURCE_DIR}/hashFunc
 )
 
 target_include_directories(

@@ -24,11 +24,23 @@ std::string DuplicateSearcher::getHash(std::string& block)
 	switch (_hash)
 	{
 	case Hash::CRC32:
-		hash_transf = getCrc32((const char*)block.c_str(), _blockSize);
+	{
+		CRC32 crc;
+		hash_transf = crc((const char*)block.c_str(), _blockSize);
 		break;
+	}
 	case Hash::MD5:
-		hash_transf = getMD5((const char*)block.c_str(), _blockSize);
+	{
+		MD5 md;
+		hash_transf = md((const char*)block.c_str(), _blockSize);
 		break;
+	}
+	case Hash::SHA1:
+	{
+		SHA1 sha;
+		hash_transf = sha((const char*)block.c_str(), _blockSize);
+		break;
+	}
 	case Hash::NONE:
 		break;
 	default:
@@ -149,7 +161,8 @@ void DuplicateSearcher::searchDuplicate(std::vector < bf::path>& conteiner)
 			{
 				_listDuplicate.push_back(h.second);
 			}
-			_stack.pop();
+			if (!_stack.empty())
+				_stack.pop();
 			_currentBlock.clear();
 		}
 	}
