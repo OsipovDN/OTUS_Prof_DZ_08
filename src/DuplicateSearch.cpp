@@ -70,7 +70,9 @@ std::string DuplicateSearcher::readBlockInFile(bf::path& path)
 	else
 	{
 		std::streampos pos = _currentPos;
-		memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
+		//memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
+		memset(_buf, '\0', _blockSize);
+		//_buf[_blockSize - 1] = '\0';
 
 		file.seekg(pos, std::ios_base::beg);
 		file.read(_buf, _blockSize);
