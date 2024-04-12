@@ -9,7 +9,7 @@
 
 DuplicateSearcher::DuplicateSearcher(unsigned long long blockSize, std::string& hash) :_blockSize(blockSize)
 {
-	_buf = new char[_blockSize];
+	_buf = new char[_blockSize+1];
 	auto myToUpper = [](char ch) {return static_cast<char>(std::toupper(static_cast<unsigned char>(ch))); };
 	std::transform(hash.begin(), hash.end(), hash.begin(), myToUpper);
 	_hash = hashType(hash);
@@ -70,12 +70,12 @@ std::string DuplicateSearcher::readBlockInFile(bf::path& path)
 	else
 	{
 		std::streampos pos = _currentPos;
-		//memset(reinterpret_cast<void*>(_buf), '\0', _blockSize);
-		memset(_buf, '\0', _blockSize);
-		//_buf[_blockSize - 1] = '\0';
+		memset(_buf, '0', _blockSize);
+		_buf[_blockSize - 1] = '\0';
 
 		file.seekg(pos, std::ios_base::beg);
 		file.read(_buf, _blockSize);
+
 		file.close();
 		return std::string{ _buf };
 	}
